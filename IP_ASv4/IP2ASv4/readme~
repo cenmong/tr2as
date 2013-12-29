@@ -1,0 +1,13 @@
+无边界：
+1,pre_del.sh
+删除traceroute结果的注释部分
+2,extract_prefix.py
+获得traceroute路径，删除无用部分
+3，IP_AS.py
+4,get_dict.py
+5,get_less3.py
+6,get_less2.py
+7,Equal_123.py
+8,get_great4.py
+算法都与ipv6的映射一样
+
