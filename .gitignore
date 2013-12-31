@@ -1,4 +1,5 @@
-*.py~
+*~
 *.pyc
 *pfx2as
 *warts
+/v6/topo-v6/topo-data.caida.org
