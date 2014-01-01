@@ -23,55 +23,38 @@ f.close()
 #END:store prefix2AS mapping in a trie
 print 'trie generation complete...'
 
+
 #START:store statistics in a dict
+hdname = 'A2A6CFC5A6CF97E5'
 ASN_count = dict()
-f = open("trpath","r")
+f0 = open('6file_list', 'r')
+for ff in f0:
+    print 'reading file: ' + ff[:-10]
+    f = open('/media/chenmeng/' + hdname +\
+            '/topo-data.caida.org/topo-v6/' + ff[:-10], 'r')
 
-for line in f.readlines():
-    if line[0] == '#':
-        continue
-    #print '################'
+    for line in f.readlines():
+        if line[0] == '#':
+            continue
+        #print '################'
 
-    ASN_pre = '-1'#AS number of the previous hop
-    count = 0#NO. of continous ASN
-    start = True
+        ASN_pre = '-1'#AS number of the previous hop
+        count = 0#NO. of continous ASN
+        start = True
 
-    segment = line.split()
-    j = 12
-    while 1:
-        j = j + 1#j should be >= 13 
-        try:
-            if segment[j] != 'q':#this hop does respond
-                addr = segment[j].split(',')[0]
-                addrbits = IPAddress(addr).bits()
-                addrbits = addrbits.replace(':','')
-                #get this address's AS number (a str)
-                ASN = t.value(addrbits, start = 0, end = None)
-                #print addr + ': ' + ASN
-                if ASN == None:#cannot find ASN
-                    if ASN_pre != '-1':
-                        if start == True:
-                            count = count + 30
-                            start = False
-                        try:
-                            ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
-                        except:
-                            #1:state.1~30:middle.31~60:start.61~90:end.
-                            ASN_count[ASN_pre] = [0] * 91 
-                            ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
-                        ASN_pre = '-1'
-                        count = 0
-                    else:
-                        if start == True:#first hop no ASN
-                            start = False
-                        pass
-
-                else:#can find the corresponding ASN
-                    #print 'ASN_pre = ' + ASN_pre
-                    #print 'ASN = ' + ASN
-                    if ASN == ASN_pre:
-                        count = count + 1
-                    else:
+        segment = line.split()
+        j = 12
+        while 1:
+            j = j + 1#j should be >= 13 
+            try:
+                if segment[j] != 'q':#this hop does respond
+                    addr = segment[j].split(',')[0]
+                    addrbits = IPAddress(addr).bits()
+                    addrbits = addrbits.replace(':','')
+                    #get this address's AS number (a str)
+                    ASN = t.value(addrbits, start = 0, end = None)
+                    #print addr + ': ' + ASN
+                    if ASN == None:#cannot find ASN
                         if ASN_pre != '-1':
                             if start == True:
                                 count = count + 30
@@ -79,45 +62,69 @@ for line in f.readlines():
                             try:
                                 ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
                             except:
+                                #1:state.1~30:middle.31~60:start.61~90:end.
                                 ASN_count[ASN_pre] = [0] * 91 
                                 ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
-                            ASN_pre = ASN
-                            count = 1
+                            ASN_pre = '-1'
+                            count = 0
                         else:
-                            ASN_pre = ASN
-                            count = 1
+                            if start == True:#first hop no ASN
+                                start = False
+                            pass
 
-            else:#the hop does not respond
-                #print 'q'
-                if ASN_pre != '-1':
-                    if start == True:
-                        count = count + 30 
-                        start = False
+                    else:#can find the corresponding ASN
+                        #print 'ASN_pre = ' + ASN_pre
+                        #print 'ASN = ' + ASN
+                        if ASN == ASN_pre:
+                            count = count + 1
+                        else:
+                            if ASN_pre != '-1':
+                                if start == True:
+                                    count = count + 30
+                                    start = False
+                                try:
+                                    ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                                except:
+                                    ASN_count[ASN_pre] = [0] * 91 
+                                    ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                                ASN_pre = ASN
+                                count = 1
+                            else:
+                                ASN_pre = ASN
+                                count = 1
+
+                else:#the hop does not respond
+                    #print 'q'
+                    if ASN_pre != '-1':
+                        if start == True:
+                            count = count + 30 
+                            start = False
+                        try:
+                            ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                        except:
+                            ASN_count[ASN_pre] = [0] * 91 
+                            ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                        ASN_pre = '-1'
+                        count = 0
+                    else:
+                        if start == True:#first hop no response
+                            start = False
+                        pass
+
+            except:#end of path
+                if count > 0:
+                    count = count + 60
                     try:
-                        ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                       ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
                     except:
-                        ASN_count[ASN_pre] = [0] * 91 
-                        ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
+                       ASN_count[ASN_pre] = [0] * 91 
+                       ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
                     ASN_pre = '-1'
                     count = 0
-                else:
-                    if start == True:#first hop no response
-                        start = False
-                    pass
-
-        except:#end of path
-            if count > 0:
-                count = count + 60
-                try:
-                   ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
-                except:
-                   ASN_count[ASN_pre] = [0] * 91 
-                   ASN_count[ASN_pre][count] = ASN_count[ASN_pre][count] + 1 
-                ASN_pre = '-1'
-                count = 0
-                
-            break
-f.close()
+                    
+                break
+    f.close()
+f0.close()
 #END:store statistics in a dict
 print 'dict generation complete...'
 
