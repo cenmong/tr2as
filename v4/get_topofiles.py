@@ -3,69 +3,57 @@ import os
 flist = list()
 
 for i in range(1, 4):
+    '''
     monitors = list()
     f = open('./get4mon/t' + str(i) + 'monitor_list', 'r')
     for line in f:
         monitors.append(line[:-1])
     f.close()
     mcount = len(monitors)
+    '''
+    f = open('./get4mon/t' + str(i) + 'daily-creation.log', 'r') 
+    rdlist = list()
+    for line in f:
+        if line[0] == '#':
+            continue
+        segment = line.split()[1]
+        rd = segment.split('.')[-5]
+        if rd not in rdlist:
+            rdlist.append(rd)
 
-    d = dict()
+    #choose the second round
+    flist = list()
+    pullrd = rdlist[1]
+    f.close()
+
     f = open('./get4mon/t' + str(i) + 'daily-creation.log', 'r') 
     for line in f:
         if line[0] == '#':
             continue
         segment = line.split()[1]
-        date = segment.split('.')[-4]
-        try:
-            dict[date] = dict[date] + 1
-        except:
-            dict[date] = 1
-
-    for line in f:
-        if line[0] == '#':
-            continue
+        if segment.split('.')[-5] == pullrd:
+            flist.append(segment)
     f.close()
-'''
-f = open('6monitor_list', 'r')
-for line in f.readlines():
-    monitors.append(line[:-1])
-f.close()
-print monitors
 
-f = open('cycle-completion.log', 'r') 
-for line in f.readlines():
-    if line[0] == '#':
-        continue
-    segment = line.split()[2]
-    mon = segment.split('.')[-3] 
-    if mon in monitors:
-        flist.append(segment)
-        monitors.remove(mon)
-f.close()
+    hdname = 'chenmeng/A2A6CFC5A6CF97E5'
 
-print flist[0].split('.')[-5]#start date
-print flist[-1].split('.')[-5]#end date
+    f = open('file_list', 'a')
+    f.write('team ' + str(i) + '\n')
+    for fl in flist:
+        f.write(fl + '\n')
+    f.close()
 
-hdname = 'chenmeng/A2A6CFC5A6CF97E5'
+    for f in flist:
+        os.system('wget -np -m -P /media/' + hdname + '/ --http-user=chenm11@mails.tsinghua.edu.cn\
+                --http-password=cenmong123 --no-check-certificate\
+                https://topo-data.caida.org/team-probing/' + f)
 
-f = open('6file_list', 'a')
-for fl in flist:
-    f.write(fl + '\n')
-f.close()
+        os.system('gzip -d /media/' + hdname +\
+                '/topo-data.caida.org/team-probing/' + f)
 
-for f in flist:
-    os.system('wget -np -m -P /media/' + hdname + '/ --http-user=chenm11@mails.tsinghua.edu.cn\
-            --http-password=cenmong123 --no-check-certificate\
-            https://topo-data.caida.org/topo-v6/' + f)
+        os.system('sc_analysis_dump /media/' + hdname +\
+                '/topo-data.caida.org/team-probing/' + f[:-3] + ' > /media/' + hdname\
+                + '/topo-data.caida.org/team-probing/' + f[:-9]) 
 
-    os.system('gzip -d /media/' + hdname +\
-            '/topo-data.caida.org/topo-v6/' + f)
-
-    os.system('sc_analysis_dump /media/' + hdname +\
-            '/topo-data.caida.org/topo-v6/' + f[:-3] + ' > /media/chenmeng/' + hdname\
-            + '/topo-data.caida.org/topo-v6/' + f[:-9]) 
-
-    os.system('rm /media/' + hdname +\
-            '/topo-data.caida.org/topo-v6/' + f[:-3])
-'''
+        os.system('rm /media/' + hdname +\
+                '/topo-data.caida.org/team-probing/' + f[:-3])
