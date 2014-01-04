@@ -2,7 +2,7 @@ from patricia import *
 from netaddr import *
 import os
 
-class V6Dict():
+class V4Dict():
     ASN_count = dict()
     t = trie(None)#px2AS trie
     hdname = 'chenmeng/A2A6CFC5A6CF97E5'
@@ -14,7 +14,7 @@ class V6Dict():
         f = open(filename, 'r')
         s = f.readline().split()
         s_addr = IPAddress(s[0]).bits()
-        s_addr = s_addr.replace(':', '')
+        s_addr = s_addr.replace('.', '')
         s_addr = s_addr[:int(s[1])]
 
         while 1:
@@ -22,7 +22,7 @@ class V6Dict():
             try:
                 s = f.readline().split()
                 s_addr = IPAddress(s[0]).bits()
-                s_addr = s_addr.replace(':', '')
+                s_addr = s_addr.replace('.', '')
                 s_addr = s_addr[:int(s[1])]
             except:
                 break
@@ -32,17 +32,20 @@ class V6Dict():
     def increase_dict(self, ASN_pre, pos):#used by get_dict()
         ac = self.ASN_count
         try:
-            ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1 
+            try:
+                ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1 
+            except:
+                #1:existence number.1~50:middle.51~100:start.101~150:end.
+                ac[ASN_pre] = [0] * 151 
+                ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1
         except:
-            #1:existence number.1~30:middle.31~60:start.61~90:end.
-            ac[ASN_pre] = [0] * 91 
-            ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1
+            print pos
 
         #record number of existence
-        if pos - 60 > 0:
-            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 60
-        elif pos - 30 > 0:
-            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 30
+        if pos - 100 > 0:
+            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 100
+        elif pos - 50 > 0:
+            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 50
         else:
             ac[ASN_pre][0] = ac[ASN_pre][0] + pos
 
@@ -51,7 +54,7 @@ class V6Dict():
         for ff in f0:
             print 'reading file: ' + ff[:-10]
             f = open('/media/' + self.hdname +\
-                    '/topo-data.caida.org/topo-v6/' + ff[:-10], 'r')
+                    '/topo-data.caida.org/team-probing/' + ff[:-10], 'r')
 
             for line in f.readlines():
                 if line[0] == '#':
@@ -71,7 +74,7 @@ class V6Dict():
                         if segment[j] != 'q':#this hop does respond
                             addr = segment[j].split(',')[0]
                             addrbits = IPAddress(addr).bits()
-                            addrbits = addrbits.replace(':','')
+                            addrbits = addrbits.replace('.', '')
                             #get this address's AS number (a str)
                             ASN = self.t.value(addrbits, start = 0, end = None)                        
                             #print addr + ': ' + ASN
@@ -93,7 +96,7 @@ class V6Dict():
                                         count = count + 1
                                     else:
                                         if start == True:#ASN_pre is the starting AS
-                                            count = count + 30
+                                            count = count + 50
                                             start = False
                                         self.increase_dict(ASN_pre, count +\
                                                 count_none)
@@ -110,7 +113,7 @@ class V6Dict():
 
                     except:#end of path
                         if count > 0:
-                            count = count + 60
+                            count = count + 100
                             self.increase_dict(ASN_pre, count + count_none)
                         break
             f.close()
@@ -121,15 +124,15 @@ class V6Dict():
     def print_ASN(self, f, ASN):#used by get_output
         ac = self.ASN_count
         f.write(ASN + ':')
-        for i in range(1, 31):
+        for i in range(1, 51):
             if ac[ASN][i] > 0:
                 f.write(str(i) + '(' + str(ac[ASN][i]) + '), ')
-        for i in range(31, 61):
+        for i in range(51, 101):
             if ac[ASN][i] > 0:
-                f.write(str(i - 30) + '(' + str(ac[ASN][i]) + 'S), ')
-        for i in range(61, 91):
+                f.write(str(i - 50) + '(' + str(ac[ASN][i]) + 'S), ')
+        for i in range(101, 151):
             if ac[ASN][i] > 0:
-                f.write(str(i - 60) + '(' + str(ac[ASN][i]) + 'E), ')
+                f.write(str(i - 100) + '(' + str(ac[ASN][i]) + 'E), ')
         f.write('\n')
         
     def get_output(self, filename):
@@ -143,11 +146,11 @@ class V6Dict():
         f = open(filename, 'a')
         for ASN in self.ASN_count.keys():
             ge4 = False
-            
-            for i in range (1, 91):
+
+            for i in range (1, 151):
                 if self.ASN_count[ASN][i] > 0:
-                    if i not in range (1, 4) and i not in range (31, 34) and i not in\
-                    range(61, 64):
+                    if i not in range (1, 4) and i not in range (51, 54) and i not in\
+                    range(101, 104):
                         ge4 = True
                         break
 
@@ -162,11 +165,14 @@ class V6Dict():
             has1 = False
             has2 = False
             has3 = False
-            if self.ASN_count[ASN][1] > 0 or self.ASN_count[ASN][31] > 0 or self.ASN_count[ASN][61] > 0:
+            if self.ASN_count[ASN][1] > 0 or self.ASN_count[ASN][51] > 0 or\
+            self.ASN_count[ASN][101] > 0:
                 has1 = True
-            if self.ASN_count[ASN][2] > 0 or self.ASN_count[ASN][32] > 0 or self.ASN_count[ASN][62] > 0:
+            if self.ASN_count[ASN][2] > 0 or self.ASN_count[ASN][52] > 0 or\
+            self.ASN_count[ASN][102] > 0:
                 has2 = True
-            if self.ASN_count[ASN][3] > 0 or self.ASN_count[ASN][33] > 0 or self.ASN_count[ASN][63] > 0:
+            if self.ASN_count[ASN][3] > 0 or self.ASN_count[ASN][53] > 0 or\
+            self.ASN_count[ASN][103] > 0:
                 has3 = True
 
             if has1 == True and has2 == False and has3 == False:
