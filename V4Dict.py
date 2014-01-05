@@ -33,21 +33,21 @@ class V4Dict():
         ac = self.ASN_count
         try:
             try:
-                ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1 
+                ac[ASN_pre][pos] += 1 
             except:
                 #1:existence number.1~50:middle.51~100:start.101~150:end.
                 ac[ASN_pre] = [0] * 151 
-                ac[ASN_pre][pos] = ac[ASN_pre][pos] + 1
+                ac[ASN_pre][pos] += 1
         except:
             print pos
 
         #record number of existence
         if pos - 100 > 0:
-            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 100
+            ac[ASN_pre][0] += pos - 100
         elif pos - 50 > 0:
-            ac[ASN_pre][0] = ac[ASN_pre][0] + pos - 50
+            ac[ASN_pre][0] += pos - 50
         else:
-            ac[ASN_pre][0] = ac[ASN_pre][0] + pos
+            ac[ASN_pre][0] += pos
 
     def get_dict(self, file_list):
         f0 = open(file_list, 'r')
@@ -69,7 +69,7 @@ class V4Dict():
                 segment = line.split()
                 j = 12
                 while 1:
-                    j = j + 1#the first hop is j == 13 
+                    j += 1#the first hop is j == 13 
                     try:
                         if segment[j] != 'q':#this hop does respond
                             addr = segment[j].split(',')[0]
@@ -80,7 +80,7 @@ class V4Dict():
                             #print addr + ': ' + ASN
                             if ASN == None:#cannot find ASN
                                 if ASN_pre != '-1':#this is not starting nones
-                                    count_none = count_none + 1
+                                    count_none += 1
                                 else:# ASN_pre == -1 means this is the start
                                     #we just omit the starting *s and Nones
                                     start = False
@@ -93,10 +93,10 @@ class V4Dict():
                                     ASN_pre = ASN
                                 else:
                                     if ASN == ASN_pre:#* and None can lies in between
-                                        count = count + 1
+                                        count += 1
                                     else:
                                         if start == True:#ASN_pre is the starting AS
-                                            count = count + 50
+                                            count += 50
                                             start = False
                                         self.increase_dict(ASN_pre, count +\
                                                 count_none)
@@ -107,13 +107,13 @@ class V4Dict():
                         else:#the hop does not respond
                             #print 'q'
                             if ASN_pre != '-1':#this is not starting nones
-                                count_none = count_none + 1
+                                count_none += 1
                             else:# ASN_pre == -1 means this is the start
                                 start = False
 
                     except:#end of path
                         if count > 0:
-                            count = count + 100
+                            count += 100
                             self.increase_dict(ASN_pre, count + count_none)
                         break
             f.close()
@@ -124,13 +124,13 @@ class V4Dict():
     def print_ASN(self, f, ASN):#used by get_output
         ac = self.ASN_count
         f.write(ASN + ':')
-        for i in range(1, 51):
+        for i in xrange(1, 51):
             if ac[ASN][i] > 0:
                 f.write(str(i) + '(' + str(ac[ASN][i]) + '), ')
-        for i in range(51, 101):
+        for i in xrange(51, 101):
             if ac[ASN][i] > 0:
                 f.write(str(i - 50) + '(' + str(ac[ASN][i]) + 'S), ')
-        for i in range(101, 151):
+        for i in xrange(101, 151):
             if ac[ASN][i] > 0:
                 f.write(str(i - 100) + '(' + str(ac[ASN][i]) + 'E), ')
         f.write('\n')
@@ -147,20 +147,20 @@ class V4Dict():
         for ASN in self.ASN_count.keys():
             ge4 = False
 
-            for i in range (1, 151):
+            for i in xrange (1, 151):
                 if self.ASN_count[ASN][i] > 0:
-                    if i not in range (1, 4) and i not in range (51, 54) and i not in\
-                    range(101, 104):
+                    if i not in xrange (1, 4) and i not in xrange (51, 54) and i not in\
+                    xrange(101, 104):
                         ge4 = True
                         break
 
             if ge4 == True:
-                ge4_c = ge4_c + 1
+                ge4_c += 1
                 f.write('>=4:')
                 self.print_ASN(f, ASN)
                 continue
 
-            le3_c = le3_c + 1
+            le3_c += 1
             f.write('<=3:')
             has1 = False
             has2 = False
@@ -177,27 +177,27 @@ class V4Dict():
 
             if has1 == True and has2 == False and has3 == False:
                 f.write('==1:')
-                e1_c = e1_c + 1
-                le2_c = le2_c + 1
+                e1_c += 1
+                le2_c += 1
                 self.print_ASN(f, ASN)
                 continue
 
             if has1 == False and has2 == True and has3 == False:
                 f.write('==2:')
-                e2_c = e2_c + 1
-                le2_c = le2_c + 1
+                e2_c += 1
+                le2_c += 1
                 self.print_ASN(f, ASN)
                 continue
 
             if has1 == True and has2 == True and has3 == False:
                 f.write('<=2 other:')
-                le2_c = le2_c + 1
+                le2_c += 1
                 self.print_ASN(f, ASN)
                 continue
 
             if has1 == False and has2 == False and has3 == True:
                 f.write('==3:')
-                e3_c = e3_c + 1
+                e3_c += 1
                 self.print_ASN(f, ASN)
                 continue
 
