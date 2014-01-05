@@ -38,5 +38,7 @@ for ASN in dict6.keys():
     else:
         pass
         
-f.write('count = ' + str(count))
+f.write('count = ' + str(count) + '\n')
+f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
+f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
 f.close()

@@ -73,10 +73,13 @@ class V6Dict():
                         v = v.split('(')
                         if 'S' in v[1]:
                             ac[ASN][30 + int(v[0])] = int(v[1].replace('S', ''))
+                            self.exist_c += int(v[1].replace('S', ''))
                         elif 'E' in v[1]:
                             ac[ASN][60 + int(v[0])] = int(v[1].replace('E', ''))
+                            self.exist_c += int(v[1].replace('E', ''))
                         else:
                             ac[ASN][int(v[0])] = int(v[1])
+                            self.exist_c += int(v[1])
                     except:#end of line
                         break
             f.close()
