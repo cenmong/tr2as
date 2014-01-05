@@ -28,7 +28,7 @@ class V4Dict():
             except:
                 break
         f.close()
-        print 'trie generation complete...'
+        print 'v4 trie generation complete...'
         
     def increase_dict(self, ASN_pre, pos):#used by get_dict()
         ac = self.ASN_count
@@ -54,6 +54,37 @@ class V4Dict():
         self.exist_c += ac[ASN_pre][0]
 
     def get_dict(self, file_list):
+        has_output = os.path.exists('4output')
+        if has_output == True:
+            print '4output exist. For speed, dict will be generated basing on it...'
+            ac = self.ASN_count
+            f = open('4output', 'r')
+            for line in f.readlines():
+                if line[0] == '*':#end of file
+                    break
+                temp = line.split(':')
+                if temp[0] == '>=4':
+                    ASN = temp[1]
+                    values = temp[2]
+                else:
+                    ASN = temp[2]
+                    values = temp[3]
+                ac[ASN] = [0] * 151#91 for v6 and 151 for v4
+                values = values.split('), ')
+                for v in values:
+                    try:
+                        v = v.split('(')
+                        if 'S' in v[1]:
+                            ac[ASN][50 + int(v[0])] = int(v[1].replace('S', ''))
+                        elif 'E' in v[1]:
+                            ac[ASN][100 + int(v[0])] = int(v[1].replace('E', ''))
+                        else:
+                            ac[ASN][int(v[0])] = int(v[1])
+                    except:#end of line
+                        break
+            f.close()
+            return self.ASN_count
+
         f0 = open(file_list, 'r')
         for ff in f0:
             print 'reading file: ' + ff[:-10]
@@ -124,7 +155,7 @@ class V4Dict():
         f0.close()
         return self.ASN_count
         #END:store statistics in a dict
-        print 'dict generation complete...'
+        print 'v4 dict generation complete...'
 
     def print_ASN(self, f, ASN):#used by get_output
         ac = self.ASN_count
@@ -141,6 +172,10 @@ class V4Dict():
         f.write('\n')
         
     def get_output(self, filename):
+        fexist = os.path.exists(filename)
+        if fexist == True:
+            os.system('rm ' + filename)
+
         ge4_c = 0
         e1_c = 0
         e2_c = 0
@@ -221,5 +256,5 @@ class V4Dict():
 
         f.close()
         #END:output statistics into a file
-        print 'output complete!'
+        print '4output complete!'
 
