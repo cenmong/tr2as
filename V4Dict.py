@@ -6,6 +6,7 @@ class V4Dict():
     ASN_count = dict()
     t = trie(None)#px2AS trie
     hdname = 'chenmeng/A2A6CFC5A6CF97E5'
+    exist_c = 0# the number of existence of all ASes
 
     def set_hdname(self, string):
         self.hdname = string
@@ -48,6 +49,9 @@ class V4Dict():
             ac[ASN_pre][0] += pos - 50
         else:
             ac[ASN_pre][0] += pos
+        
+        #increment all exist number
+        self.exist_c += ac[ASN_pre][0]
 
     def get_dict(self, file_list):
         f0 = open(file_list, 'r')
@@ -118,6 +122,7 @@ class V4Dict():
                         break
             f.close()
         f0.close()
+        return self.ASN_count
         #END:store statistics in a dict
         print 'dict generation complete...'
 
