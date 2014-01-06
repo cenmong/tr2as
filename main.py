@@ -1,42 +1,39 @@
-from V6Dict import *
-from V4Dict import *
+from ASTR import *
 import os
 
 hd_name = 'chenmeng/A2A6CFC5A6CF97E5'#different in different computers
 
 #-------------------------------IPv6 start-------------------------------#
-d6 = V6Dict()
-d6.set_hdname(hd_name)
-d6.get_trie('routeviews-rv6-20131224-1200.pfx2as')
-d6.get_dict('6file_list')
+astr6 = ASTR('ipv6')
+astr6.set_hdname(hd_name)
+astr6.get_trie('pfx2as/routeviews-rv6-20131224-1200.pfx2as')
+astr6.get_dict('flist/6file_list')
 
 exists = [10, 100, 1000]
 lvalues = [2, 4, 7]
-dict6 = d6.classify(exists, lvalues)
-d6.get_output('6output')#don't change this string
+dict6 = astr6.classify(exists, lvalues)
+astr6.get_output('6output')#don't change this string
 
-exist_c6 = d6.exist_c 
+exist_c6 = astr6.exist_c 
 as_c6 = len(dict6.keys())
 exist_per_as6 = float(exist_c6)/float(as_c6)
 
 #-------------------------------IPv4 start-------------------------------#
-d4 = V4Dict()
-d4.set_hdname(hd_name)
-d4.get_trie('routeviews-rv2-20131226-1200.pfx2as')
-dict4 = d4.get_dict('4file_list_test')
+astr4 = ASTR('ipv4')
+astr4.set_hdname(hd_name)
+astr4.get_trie('pfx2as/routeviews-rv2-20131226-1200.pfx2as')
+astr4.get_dict('flist/4file_list_test')
 
 exists = [50, 500, 5000]
 lvalues = [2, 4, 7]
-dict4 = d4.classify(exists, lvalues)
-d4.get_output('4output')#don't change this string
+dict4 = astr4.classify(exists, lvalues)
+astr4.get_output('4output')#don't change this string
 
-exist_c4 = d4.exist_c 
+exist_c4 = astr4.exist_c 
 as_c4 = len(dict4.keys())
 exist_per_as4 = float(exist_c4)/float(as_c4)
 
 #-------------------------------IPv4/IPv6 analysis-------------------------------#
-
-#TODO: detailed analysis is needed here
 print 'analyzing v4/v6 results...'
 fexist = os.path.exists('alloutput')
 if fexist == True:
@@ -49,13 +46,13 @@ for ASN in dict6.keys():
         if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 or\
         abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
             count += 1
-            d6.print_ASN(f, ASN)
-            d4.print_ASN(f, ASN)
+            astr6.print_ASN(f, ASN)
+            astr4.print_ASN(f, ASN)
             f.write('---------------------------------------\n')
     else:
         pass
         
 f.write('count = ' + str(count) + '\n')
-f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
-f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
+#f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
+#f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
 f.close()
