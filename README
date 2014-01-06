@@ -1,4 +1,11 @@
-说明：
-先确定要分析的文件
-然后跑tr2as程序
-最后分析程序结果
+step 1:
+Generate v4 and v6 file lists and download the files.
+These are accomplished in the /v4 and /v6 directories.
+
+step 2:
+run main.py, which will create three files: 4output, 6ouput and alloutput.
+This will take some time. However, if you have run main.py before and the output files exist, the run time will be significantly reduced.
+
+notice:
+You don't have to delete the output files before running main.py again. The program will deal with it.
+You need to change the hard disk name (hd_name) when running the program in different computers.

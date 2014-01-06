@@ -7,6 +7,7 @@ class V4Dict():
     t = trie(None)#px2AS trie
     hdname = 'chenmeng/A2A6CFC5A6CF97E5'
     exist_c = 0# the number of existence of all ASes
+    none_c = 0#number of None(no corresponding AS) and p
 
     def set_hdname(self, string):
         self.hdname = string
@@ -37,7 +38,8 @@ class V4Dict():
                 ac[ASN_pre][pos] += 1 
             except:
                 #1:existence number.1~50:middle.51~100:start.101~150:end.
-                ac[ASN_pre] = [0] * 151 
+                #151~160:state values
+                ac[ASN_pre] = [0] * 161 
                 ac[ASN_pre][pos] += 1
         except:
             print pos
@@ -69,7 +71,7 @@ class V4Dict():
                 else:
                     ASN = temp[2]
                     values = temp[3]
-                ac[ASN] = [0] * 151#91 for v6 and 151 for v4
+                ac[ASN] = [0] * 161#91 for v6 and 151 for v4
                 values = values.split('), ')
                 for v in values:
                     try:
@@ -122,6 +124,7 @@ class V4Dict():
                                 else:# ASN_pre == -1 means this is the start
                                     #we just omit the starting *s and Nones
                                     start = False
+                                    self.none_c += 1
 
                             else:#can find the corresponding ASN
                                 #print 'ASN_pre = ' + ASN_pre
@@ -138,6 +141,7 @@ class V4Dict():
                                             start = False
                                         self.increase_dict(ASN_pre, count +\
                                                 count_none)
+                                        self.none_c += count_none
                                         ASN_pre = ASN
                                         count = 1
                                         count_none = 0
@@ -148,17 +152,63 @@ class V4Dict():
                                 count_none += 1
                             else:# ASN_pre == -1 means this is the start
                                 start = False
+                                self.none_c += 1
 
                     except:#end of path
                         if count > 0:
                             count += 100
                             self.increase_dict(ASN_pre, count + count_none)
+                        self.none_c += count_none
                         break
             f.close()
         f0.close()
         return self.ASN_count
         #END:store statistics in a dict
         print 'v4 dict generation complete...'
+
+    def classify(self, counts, lvalues):#x,y:lists of boundary values
+        num = len(counts)
+        state1 = -1
+        state2 = -1
+        lvalue = -1#large value
+        ac = self.ASN_count
+
+        for k in ac.keys():
+            for i in xrange(0, num):
+                if ac[k][0] <= counts[i]:
+                    state1 = i
+                    break
+            if state1 == -1:#larger than counts[num - 1]
+                state1 = num
+
+            for j in xrange(1, 51):
+                if ac[k][j] > 0:
+                    if j > lvalue:
+                        lvalue = j
+            for j in xrange(51, 101):
+                if ac[k][j] > 0:
+                    if j - 55 > lvalue:
+                        lvalue = j - 50
+            for j in xrange(101, 151):
+                if ac[k][j] > 0:
+                    if j - 100 > lvalue:
+                        lvalue = j - 100
+
+            for i in xrange(0, num):
+                if lvalue <= lvalues[i]:
+                    state2 = i
+                    break
+            if state2 == -1:#larger than lvalues[num - 1]
+                state2 = num
+
+            ac[k][-1] = state1
+            ac[k][-2] = state2
+
+            state1 = -1
+            state2 = -1
+            lvalue = -1
+
+        return ac 
 
     def print_ASN(self, f, ASN):#used by get_output
         ac = self.ASN_count
@@ -256,6 +306,9 @@ class V4Dict():
         f.write('<=2:' + str(le2_c) + '(' + str(float(le2_c)/float(total) * 100) +'%)\n')
         f.write('<=3:' + str(le3_c) + '(' + str(float(le3_c)/float(total) * 100) +'%)\n')
         f.write('>=4:' + str(ge4_c) + '(' + str(float(ge4_c)/float(total) * 100) +'%)\n')
+
+        f.write('exist_c = ' + str(self.exist_c) + '\n')
+        f.write('none_c = ' + str(self.none_c) + '\n')
 
         f.close()
         #END:output statistics into a file

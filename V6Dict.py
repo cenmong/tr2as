@@ -7,6 +7,7 @@ class V6Dict():
     t = trie(None)#px2AS trie
     hdname = 'chenmeng/A2A6CFC5A6CF97E5'
     exist_c = 0# the number of existence of all ASes
+    none_c = 0#number of None(no corresponding AS) and p
 
     def set_hdname(self, string):
         self.hdname = string
@@ -35,8 +36,9 @@ class V6Dict():
         try:
             ac[ASN_pre][pos] += 1 
         except:
-            #1:existence number.1~30:middle.31~60:start.61~90:end.
-            ac[ASN_pre] = [0] * 91 
+            #1:existence number.1~30:middle.31~60:start.
+            #61~90:end.91~100:state values
+            ac[ASN_pre] = [0] * 101 
             ac[ASN_pre][pos] += 1
 
         #record number of existence
@@ -66,7 +68,7 @@ class V6Dict():
                 else:
                     ASN = temp[2]
                     values = temp[3]
-                ac[ASN] = [0] * 91#91 for v6 and 151 for v4
+                ac[ASN] = [0] * 101#91 for v6 and 151 for v4
                 values = values.split('), ')
                 for v in values:
                     try:
@@ -94,7 +96,6 @@ class V6Dict():
             for line in f.readlines():
                 if line[0] == '#':
                     continue
-                #print '################'
 
                 ASN_pre = '-1'#AS number of the previous hop, -1: initial value
                 count = 0#No. of continous ASN
@@ -119,10 +120,9 @@ class V6Dict():
                                 else:# ASN_pre == -1 means this is the start
                                     #we just omit the starting *s and Nones
                                     start = False
+                                    self.none_c += 1
 
                             else:#can find the corresponding ASN
-                                #print 'ASN_pre = ' + ASN_pre
-                                #print 'ASN = ' + ASN
                                 if ASN_pre == '-1':#the first ASN
                                     count = 1
                                     ASN_pre = ASN
@@ -135,27 +135,73 @@ class V6Dict():
                                             start = False
                                         self.increase_dict(ASN_pre, count +\
                                                 count_none)
+                                        self.none_c += count_none
                                         ASN_pre = ASN
                                         count = 1
                                         count_none = 0
 
                         else:#the hop does not respond
-                            #print 'q'
                             if ASN_pre != '-1':#this is not starting nones
                                 count_none += 1
                             else:# ASN_pre == -1 means this is the start
                                 start = False
+                                self.none_c += 1
 
                     except:#end of path
                         if count > 0:
                             count += 60
                             self.increase_dict(ASN_pre, count + count_none)
+                        self.none_c += count_none
                         break
             f.close()
         f0.close()
         return self.ASN_count
         #END:store statistics in a dict
         print 'v6 dict generation complete...'
+
+    def classify(self, counts, lvalues):#x,y:lists of boundary values
+        num = len(counts)
+        state1 = -1
+        state2 = -1
+        lvalue = -1#large value
+        ac = self.ASN_count
+
+        for k in ac.keys():
+            for i in xrange(0, num):
+                if ac[k][0] <= counts[i]:
+                    state1 = i
+                    break
+            if state1 == -1:#larger than counts[num - 1]
+                state1 = num
+
+            for j in xrange(1, 31):
+                if ac[k][j] > 0:
+                    if j > lvalue:
+                        lvalue = j
+            for j in xrange(31, 61):
+                if ac[k][j] > 0:
+                    if j - 30 > lvalue:
+                        lvalue = j - 30
+            for j in xrange(61, 91):
+                if ac[k][j] > 0:
+                    if j - 60 > lvalue:
+                        lvalue = j - 60
+
+            for i in xrange(0, num):
+                if lvalue <= lvalues[i]:
+                    state2 = i
+                    break
+            if state2 == -1:#larger than lvalues[num - 1]
+                state2 = num
+
+            ac[k][-1] = state1
+            ac[k][-2] = state2
+
+            state1 = -1
+            state2 = -1
+            lvalue = -1
+
+        return ac 
 
     def print_ASN(self, f, ASN):#used by get_output
         ac = self.ASN_count
@@ -250,6 +296,9 @@ class V6Dict():
         f.write('<=2:' + str(le2_c) + '(' + str(float(le2_c)/float(total) * 100) +'%)\n')
         f.write('<=3:' + str(le3_c) + '(' + str(float(le3_c)/float(total) * 100) +'%)\n')
         f.write('>=4:' + str(ge4_c) + '(' + str(float(ge4_c)/float(total) * 100) +'%)\n')
+
+        f.write('exist_c = ' + str(self.exist_c) + '\n')
+        f.write('none_c = ' + str(self.none_c) + '\n')
 
         f.close()
         #END:output statistics into a file
