@@ -40,19 +40,31 @@ if fexist == True:
     os.system('rm alloutput')
 
 f = open('alloutput', 'a')
-count = 0
+count_exist = 0
+count_lvalue = 0
+count_both = 0
 for ASN in dict6.keys():
     if ASN in dict4.keys():
         if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 or\
         abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
-            count += 1
             astr6.print_ASN(f, ASN)
             astr4.print_ASN(f, ASN)
-            f.write('---------------------------------------\n')
+        if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 and\
+        abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
+            f.write('large value diverse\n')
+            count_both += 1
+        elif abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2:
+            count_exist += 1
+            f.write('existence diverse\n')
+        elif abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
+            count_lvalue += 1
+            f.write('large value diverse\n')
     else:
         pass
         
-f.write('count = ' + str(count) + '\n')
+f.write('count_both = ' + str(count_both) + '\n')
+f.write('count_exist = ' + str(count_exist) + '\n')
+f.write('count_lvalue = ' + str(count_lvalue) + '\n')
 #f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
 #f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
 f.close()
