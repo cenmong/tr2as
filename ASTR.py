@@ -49,6 +49,9 @@ class ASTR():
         except:
             #1:existence number.1~50:middle.51~100:start.101~150:end.
             #151~160:state values
+            #-1:existence level
+            #-2:largest value level
+            #-3:set 1 of only has value 2
             ac[ASN_pre] = [0] * 161 
             ac[ASN_pre][pos] += 1
 
@@ -63,7 +66,7 @@ class ASTR():
         #increment all exist number
         self.exist_c += ac[ASN_pre][0]
 
-    def get_dict(self, file_list):
+    def get_dict(self, file_list, file_pfx2as):
         has_output = os.path.exists(str(self.tp) + 'output')
         if has_output == True:
             print str(self.tp) + 'output exist. For speed, dict will be generated basing on it...'
@@ -103,6 +106,7 @@ class ASTR():
             f.close()
             return ac
 
+        self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
         for ff in f0:
             print 'reading file: ' + ff[:-10]
@@ -300,6 +304,7 @@ class ASTR():
                 e2_c += 1
                 le2_c += 1
                 self.print_ASN(f, ASN)
+                self.ASN_count[ASN][-3] = 1 
                 continue
 
             if has1 == True and has2 == True and has3 == False:
