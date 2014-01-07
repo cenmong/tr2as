@@ -47,11 +47,15 @@ class ASTR():
         try:
             ac[ASN_pre][pos] += 1 
         except:
-            #1:existence number.1~50:middle.51~100:start.101~150:end.
+            #0:existence number.1~50:middle.51~100:start.101~150:end.
             #151~160:state values
             #-1:existence level
             #-2:largest value level
-            #-3:set 1 of only has value 2
+            #-4:largest value
+            #-5:existence of transit situations
+            #-6:largest value of transit situations
+            #-7:==1 if only has value 1 and 2
+            #-8:==1 if only has value 2 and 3
             ac[ASN_pre] = [0] * 161 
             ac[ASN_pre][pos] += 1
 
@@ -227,6 +231,19 @@ class ASTR():
 
             ac[k][-1] = state1
             ac[k][-2] = state2
+            ac[k][-4] = lvalue
+
+            for j in xrange(1, 51):#only care about transit situations
+                ac[k][-5] += ac[k][j]
+                if ac[k][j] > 0 and j > ac[k][-6]:
+                    ac[k][-6] = j
+
+            if ac[k][-4] == 2:
+                if ac[k][1] != 0 or ac[k][51] != 0 or ac[k][101] != 0:
+                    ac[k][-7] = 1
+            if ac[k][-4] == 3:
+                if ac[k][2] != 0 or ac[k][52] != 0 or ac[k][102] != 0:
+                    ac[k][-8] = 1
 
             state1 = -1
             state2 = -1
