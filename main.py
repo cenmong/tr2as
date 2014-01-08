@@ -2,7 +2,6 @@ from ASTR import *
 import os
 
 hd_name = 'chenmeng/A2A6CFC5A6CF97E5'#different in different computers
-
 #-------------------------------IPv6 start-------------------------------#
 astr6 = ASTR('ipv6')
 astr6.set_hdname(hd_name)
@@ -13,10 +12,7 @@ exists = [10, 100, 1000]
 lvalues = [1, 2, 4]
 dict6 = astr6.classify(exists, lvalues)
 
-exist_c6 = astr6.exist_c 
-as_c6 = len(dict6.keys())
-exist_per_as6 = float(exist_c6)/float(as_c6)
-
+exist_per_as6 = float(astr6.exist_c)/float(len(dict6.keys()))
 #-------------------------------IPv4 start-------------------------------#
 astr4 = ASTR('ipv4')
 astr4.set_hdname(hd_name)
@@ -27,46 +23,34 @@ exists = [50, 500, 5000]
 lvalues = [1, 2, 4]
 dict4 = astr4.classify(exists, lvalues)
 
-exist_c4 = astr4.exist_c 
-as_c4 = len(dict4.keys())
-exist_per_as4 = float(exist_c4)/float(as_c4)
-
-#-------------------------------IPv4/IPv6 analysis-------------------------------#
+exist_per_as4 = float(astr4.exist_c)/float(len(dict4.keys()))
+#---------------------------Finding interesting ASes-------------------------------#
 print 'analyzing v4/v6 results...'
-#start:check file existence#
 fexist = os.path.exists('alloutput')
 if fexist == True:
     os.system('rm alloutput')
-#end:check file existence#
-
-#start:check file existence#
 fexist = os.path.exists('intrestingAS')
 if fexist == True:
     os.system('rm intrestingAS')
-#end:check file existence#
+fexist = os.path.exists('as12in6')
+if fexist == True:
+    os.system('rm as12in6')
+fexist = os.path.exists('as23in6')
+if fexist == True:
+    os.system('rm as23in6')
+f12 = open('as12in6', 'a')
+f23 = open('as23in6', 'a')
 
-#start:finding interesting ASes#
 f = open('alloutput', 'a')
-f1 = open('intrestingAS', 'a')
 count_exist = 0
 count_lvalue = 0
 count_both = 0
 for ASN in dict6.keys():
+    if dict6[ASN][-7] == 1:
+        f12.write(ASN + '|' + str(dict6[ASN][0])+ '\n') 
+    if dict6[ASN][-8] == 1:
+        f23.write(ASN + '|' + str(dict6[ASN][0]) + '\n') 
     if ASN in dict4.keys():
-        if dict6[ASN][-3] == 1 and dict6[ASN][-1] > 0 and\
-        dict4[ASN][-2] > 1 and dict4[ASN][-1] > 0:
-            astr6.print_ASN(f1, ASN)
-            astr4.print_ASN(f1, ASN)
-            f1.write('------------------------------------\n')
-        #if dict4[ASN][-3] == 1 and dict4[ASN][-1] > 0 and\
-        #dict6[ASN][-2] > 1 and dict6[ASN][-1] > 0:
-        #    astr6.print_ASN(f1, ASN)
-        #    astr4.print_ASN(f1, ASN)
-        #    f1.write('************************************\n')
-        if dict4[ASN][-3] == 1:
-            astr6.print_ASN(f1, ASN)
-            astr4.print_ASN(f1, ASN)
-            f1.write('************************************\n')
         if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 or\
         abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
             astr6.print_ASN(f, ASN)
@@ -90,9 +74,8 @@ f.write('count_lvalue = ' + str(count_lvalue) + '\n')
 f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
 f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
 f.close()
-f1.close()
-#end:finding interesting ASes#
-
+f12.close()
+f23.close()
 #-------------------------plot something, you know...--------------------------#
 import matplotlib.pyplot as plt 
 import numpy as np
@@ -195,7 +178,7 @@ ylim = ymax + 1
 axScatter.set_ylim( (0, ylim) )
 ybins = np.arange(0, ylim + binwidth, binwidth)
 axHisty.hist(vlist4, bins = ybins, orientation='horizontal')
-axHisty.set_ylim( axScatter.get_ylim() )
+axHisty.set_ylim(axScatter.get_ylim() )
 plt.show()
 
 #**************************IPv6****************************#
@@ -222,5 +205,6 @@ ylim = ymax + 1
 axScatter.set_ylim( (0, ylim) )
 ybins = np.arange(0, ylim + binwidth, binwidth)
 axHisty.hist(vlist6, bins = ybins, orientation='horizontal')
-axHisty.set_ylim( axScatter.get_ylim() )
+axHisty.set_ylim(axScatter.get_ylim() )
 plt.show()
+
