@@ -113,6 +113,15 @@ class ASTR():
 
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
+        f12 = []
+        f23 = []
+        f12 = open('as12in6', 'r')
+        for line in f12:
+            as12.append.(f12.split('|')[0])
+        f23 = open('as23in6', 'r')
+            as23.append.(f23.split('|')[0])
+        f1212 = open('12resultv6', 'a')
+        f2323 = open('23resultv6', 'a')
         for ff in f0:
             print 'reading file: ' + ff[:-10]
             if self.tp == 4:
@@ -158,6 +167,11 @@ class ASTR():
                                     start = False
 
                             else:#can find the corresponding ASN
+                                if self.tp == 6:
+                                    if ASN in as12:
+                                        f1212.write(line)
+                                    elif ASN in as23:
+                                        f2323.write(line)
                                 if ASN_pre == '-1':#the first ASN
                                     count = 1
                                     ASN_pre = ASN
@@ -194,6 +208,10 @@ class ASTR():
                         break
             f.close()
         f0.close()
+        f12.close()
+        f23.close()
+        f1212.close()
+        f2323.close()
         return self.ASN_count
         #END:store statistics in a dict
         print str(self.tp) + ': dict generation complete...'
