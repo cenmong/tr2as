@@ -12,7 +12,8 @@ class ASTR():
         self.hdname = 'chenmeng/A2A6CFC5A6CF97E5'#hard dist where traceroute data are stored
         self.t = trie(None)#px2AS trie
         self.exist_c = 0# the number of existence of all ASes
-        self.none_c = 0#number of None(no corresponding AS) and p
+        self.none_c = 0#number of all Nones(no corresponding AS) 
+        self.p_c = 0#number of all p's
 
     def set_hdname(self, string):
         self.hdname = string
@@ -129,6 +130,8 @@ class ASTR():
                 ASN_pre = '-1'#AS number of the previous hop, -1: initial value
                 count = 0#No. of continous ASN
                 count_none = 0#No.of continues 'p' and None
+                count_none_none = 0
+                count_none_p = 0
                 start = True
 
                 segment = line.split()
@@ -146,12 +149,13 @@ class ASTR():
                             #get this address's AS number (a str)
                             ASN = self.t.value(addrbits, start = 0, end = None)                        
                             if ASN == None:#cannot find ASN
+                                self.none_c += 1
                                 if ASN_pre != '-1':#this is not starting nones
                                     count_none += 1
+                                    count_none_none += 1
                                 else:# ASN_pre == -1 means this is the start
                                     #we just omit the starting *s and Nones
                                     start = False
-                                    self.none_c += 1
 
                             else:#can find the corresponding ASN
                                 if ASN_pre == '-1':#the first ASN
@@ -164,26 +168,29 @@ class ASTR():
                                         if start == True:#ASN_pre is the starting AS
                                             count += 50
                                             start = False
-                                        self.increase_dict(ASN_pre, count +\
-                                                count_none)
-                                        self.none_c += count_none
+                                        self.increase_dict(ASN_pre, count + count_none)
+                                        self.none_c -= count_none_none
+                                        self.p_c -= count_none_p
                                         ASN_pre = ASN
                                         count = 1
                                         count_none = 0
+                                        count_none_none = 0
+                                        count_none_p = 0
 
                         else:#the hop does not respond
-                            #print 'q'
+                            self.p_c += 1
                             if ASN_pre != '-1':#this is not starting nones
                                 count_none += 1
+                                count_none_p += 1
                             else:# ASN_pre == -1 means this is the start
                                 start = False
-                                self.none_c += 1
 
                     except:#end of path
                         if count > 0:
                             count += 100
                             self.increase_dict(ASN_pre, count + count_none)
-                        self.none_c += count_none
+                            self.none_c -= count_none_none
+                            self.p_c -= count_none_p
                         break
             f.close()
         f0.close()
@@ -351,8 +358,8 @@ class ASTR():
 
         f.write('exist_c = ' + str(self.exist_c) + '\n')
         f.write('none_c = ' + str(self.none_c) + '\n')
+        f.write('p_c = ' + str(self.p_c) + '\n')
 
         f.close()
-        #END:output statistics into a file
         print str(self.tp) + ': output complete!'
 
