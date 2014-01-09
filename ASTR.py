@@ -63,13 +63,13 @@ class ASTR():
         #record number of existence
         if pos - 100 > 0:
             ac[ASN_pre][0] += pos - 100
+            self.exist_c += pos - 100
         elif pos - 50 > 0:
             ac[ASN_pre][0] += pos - 50
+            self.exist_c += pos - 50
         else:
             ac[ASN_pre][0] += pos
-        
-        #increment all exist number
-        self.exist_c += ac[ASN_pre][0]
+            self.exist_c += pos
 
     def get_dict(self, file_list, file_pfx2as):
         has_output = os.path.exists(str(self.tp) + 'output')
@@ -113,13 +113,14 @@ class ASTR():
 
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
-        f12 = []
-        f23 = []
+        as12 = []
+        as23 = []
         f12 = open('as12in6', 'r')
         for line in f12:
-            as12.append.(f12.split('|')[0])
+            as12.append(line.split('|')[0])
         f23 = open('as23in6', 'r')
-            as23.append.(f23.split('|')[0])
+        for line in f23:
+            as23.append(line.split('|')[0])
         f1212 = open('12resultv6', 'a')
         f2323 = open('23resultv6', 'a')
         for ff in f0:
