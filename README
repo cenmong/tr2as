@@ -8,4 +8,4 @@ This will take some time. However, if you have run main.py before and the output
 
 notice:
 You don't have to delete the output files before running main.py again. The program will deal with it.
-You need to change the hard disk name (hd_name) when running the program in different computers.
+You need to change the hard disk name (hd_name) when running the program on different computers.

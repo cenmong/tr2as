@@ -48,8 +48,9 @@ class ASTR():
         try:
             ac[ASN_pre][pos] += 1 
         except:
-            #0:existence number.1~50:middle.51~100:start.101~150:end.
-            #151~160:state values
+            #0:existence number.
+            #1~50:middle.51~100:start.101~150:end.
+            #151~160:state values:
             #-1:existence level
             #-2:largest value level
             #-4:largest value
@@ -113,9 +114,10 @@ class ASTR():
 
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
+        '''
         as12 = []
         as23 = []
-        f12 = open('as12in6', 'r')
+        f12 = open('as12in6', 'r')#as12/23in6 are generated in main.py.
         for line in f12:
             as12.append(line.split('|')[0])
         f23 = open('as23in6', 'r')
@@ -123,6 +125,7 @@ class ASTR():
             as23.append(line.split('|')[0])
         f1212 = open('12resultv6', 'a')
         f2323 = open('23resultv6', 'a')
+        '''
         for ff in f0:
             print 'reading file: ' + ff[:-10]
             if self.tp == 4:
@@ -168,11 +171,13 @@ class ASTR():
                                     start = False
 
                             else:#can find the corresponding ASN
+                                '''
                                 if self.tp == 6:
                                     if ASN in as12:
                                         f1212.write(line)
                                     elif ASN in as23:
                                         f2323.write(line)
+                                '''
                                 if ASN_pre == '-1':#the first ASN
                                     count = 1
                                     ASN_pre = ASN
@@ -209,10 +214,10 @@ class ASTR():
                         break
             f.close()
         f0.close()
-        f12.close()
-        f23.close()
-        f1212.close()
-        f2323.close()
+        #f12.close()
+        #f23.close()
+        #f1212.close()
+        #f2323.close()
         return self.ASN_count
         #END:store statistics in a dict
         print str(self.tp) + ': dict generation complete...'

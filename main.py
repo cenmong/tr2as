@@ -1,7 +1,7 @@
 from ASTR import *
 import os
 
-hd_name = 'chenmeng/A2A6CFC5A6CF97E5'#different in different computers
+hd_name = 'chenmeng/A2A6CFC5A6CF97E5'#change this on different computers
 #-------------------------------IPv6 start-------------------------------#
 astr6 = ASTR('ipv6')
 astr6.set_hdname(hd_name)
@@ -10,7 +10,7 @@ astr6.get_dict('flist/6file_list', 'pfx2as/routeviews-rv6-20131224-1200.pfx2as')
 astr6.get_output('6output')#don't change this string
 exists = [10, 100, 1000]
 lvalues = [1, 2, 4]
-dict6 = astr6.classify(exists, lvalues)
+dict6 = astr6.classify(exists, lvalues)#get attributes of each AS
 
 exist_per_as6 = float(astr6.exist_c)/float(len(dict6.keys()))
 #-------------------------------IPv4 start-------------------------------#
@@ -18,7 +18,7 @@ astr4 = ASTR('ipv4')
 astr4.set_hdname(hd_name)
 astr4.get_dict('flist/4file_list_test', 'pfx2as/routeviews-rv2-20131226-1200.pfx2as')
 
-astr4.get_output('4output')#don't change this string
+astr4.get_output('4output')
 exists = [50, 500, 5000]
 lvalues = [1, 2, 4]
 dict4 = astr4.classify(exists, lvalues)
@@ -42,6 +42,7 @@ f12 = open('as12in6', 'a')
 f23 = open('as23in6', 'a')
 
 f = open('alloutput', 'a')
+#if the same as has different levels in IPv4 and IPv6, store it
 count_exist = 0
 count_lvalue = 0
 count_both = 0
