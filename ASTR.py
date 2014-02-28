@@ -5,20 +5,22 @@ import os
 class ASTR():
     def __init__(self, string):
         if string == 'ipv4':
-            self.tp = 4#type:4 or 6
+            self.tp = 4
         elif string == 'ipv6':
             self.tp = 6
-        self.ASN_count = dict()
-        self.hdname = 'chenmeng/A2A6CFC5A6CF97E5'#hard dist where traceroute data are stored
+        self.ASN_count = dict()#key: AS Number. value: integer lists.
+        self.hdname = 'chenmeng/A2A6CFC5A6CF97E5'#location where traceroute data are stored
         self.t = trie(None)#px2AS trie
         self.exist_c = 0# the number of existence of all ASes
         self.none_c = 0#number of all Nones(no corresponding AS) 
-        self.p_c = 0#number of all p's
+        self.p_c = 0#number of all p's(no response)
 
     def set_hdname(self, string):
         self.hdname = string
 
-    def get_trie(self, filename):#change filename into file_list if possible
+    #read the prefix2as file and build a trie on which a node stand for a prefix
+    # and the value in it is the AS number
+    def get_trie(self, filename):
         f = open(filename, 'r')
         s = f.readline().split()
         s_addr = IPAddress(s[0]).bits()
@@ -41,9 +43,10 @@ class ASTR():
             except:
                 break
         f.close()
-        print str(self.tp) + ': trie generation complete...'
-        
-    def increase_dict(self, ASN_pre, pos):#used by get_dict()
+        print 'IPv' + str(self.tp) + ': trie generation complete...'
+       
+    #used in get_dict(). Increase ASN_pre's dict value in a specific position
+    def increase_dict(self, ASN_pre, pos):
         ac = self.ASN_count
         try:
             ac[ASN_pre][pos] += 1 
@@ -73,6 +76,8 @@ class ASTR():
             self.exist_c += pos
 
     def get_dict(self, file_list, file_pfx2as):
+        #if output file has already been generated in previous runs,
+        #we directly use them to conduct the dict 
         has_output = os.path.exists(str(self.tp) + 'output')
         if has_output == True:
             print str(self.tp) + 'output exist. For speed, dict will be generated basing on it...'
@@ -114,6 +119,8 @@ class ASTR():
 
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
+        #I temprarily remove everything about pmtud because it is still an
+        #immature idea
         '''
         as12 = []
         as23 = []
@@ -123,7 +130,7 @@ class ASTR():
         f23 = open('as23in6', 'r')
         for line in f23:
             as23.append(line.split('|')[0])
-        f1212 = open('12resultv6', 'a')
+        f1212 = open('12resultv6', 'a')#TODO: I use it before I create it!!!
         f2323 = open('23resultv6', 'a')
         '''
         for ff in f0:
@@ -178,10 +185,10 @@ class ASTR():
                                     elif ASN in as23:
                                         f2323.write(line)
                                 '''
-                                if ASN_pre == '-1':#the first ASN
+                                if ASN_pre == '-1':#ASN is the first one
                                     count = 1
                                     ASN_pre = ASN
-                                else:
+                                else:#ASN is not the first one
                                     if ASN == ASN_pre:#* and None can lies in between
                                         count += 1
                                     else:
@@ -220,8 +227,10 @@ class ASTR():
         #f2323.close()
         return self.ASN_count
         #END:store statistics in a dict
-        print str(self.tp) + ': dict generation complete...'
+        print 'IPv' + str(self.tp) + ': dict generation complete...'
 
+    #This function accomplish more work that classify. It sets many attribute
+    #values of each AS.
     def classify(self, counts, lvalues):#x,y:lists of boundary values
         num = len(counts)
         state1 = -1

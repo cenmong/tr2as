@@ -9,3 +9,12 @@ This will take some time. However, if you have run main.py before and the output
 notice:
 You don't have to delete the output files before running main.py again. The program will deal with it.
 You need to change the hard disk name (hd_name) when running the program on different computers.
+
+-------------------------20140228---------------------
+ASTR.py defines the object that processes and stores AS-level traceroute information. It is sophistigated but we'll try to make it as clear as possible.
+
+main.py is easy and is the controlling head of everything, including plotting (however, I plan to write a seperate plotting program later). 
+
+pmtud.py is a stand alone program. It conducts pmtu detection towards given destinations. These destinations are those that lead to the existence of 1/2 ASes or 2/3 ASes. However, our preliminary experiment shows that the path our PC takes can be quite different than CAIDAark'. Therefore, our method for deciding destinations is not good. Also note that broadly speaking, only after we get access to large MTU line as source can we really conduct useful pmtud, because otherwise we are unable to detect large pmtu (> 1500) decreases. 
+
+Program for getting traceroute files is also independent and immature and not automated enough. Firstly, I try to get the list of all monitors from a long log file. Secondly, using this monitor list and some fetch rules, I fetch traceroute files. Note that the monitor list is quite stable, canbe generated once before we conduct any real measurement. If one want to get traceroute files, he needs to modify the program, like storage location, download choices and quantity. Making this process fully-automated and user-friendly is future work. 

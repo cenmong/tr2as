@@ -38,8 +38,8 @@ if fexist == True:
 fexist = os.path.exists('as23in6')
 if fexist == True:
     os.system('rm as23in6')
-f12 = open('as12in6', 'a')
-f23 = open('as23in6', 'a')
+#f12 = open('as12in6', 'a')
+#f23 = open('as23in6', 'a')
 
 f = open('alloutput', 'a')
 #if the same as has different levels in IPv4 and IPv6, store it
@@ -48,9 +48,9 @@ count_lvalue = 0
 count_both = 0
 for ASN in dict6.keys():
     if dict6[ASN][-7] == 1:
-        f12.write(ASN + '|' + str(dict6[ASN][0])+ '\n') 
+        #f12.write(ASN + '|' + str(dict6[ASN][0])+ '\n') 
     if dict6[ASN][-8] == 1:
-        f23.write(ASN + '|' + str(dict6[ASN][0]) + '\n') 
+        #f23.write(ASN + '|' + str(dict6[ASN][0]) + '\n') 
     if ASN in dict4.keys():
         if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 or\
         abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
