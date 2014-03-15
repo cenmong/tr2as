@@ -1,7 +1,7 @@
 from ASTR import *
 import os
+from env import hd_name
 
-hd_name = 'chenmeng/A2A6CFC5A6CF97E5'#change this on different computers
 #-------------------------------IPv6 start-------------------------------#
 astr6 = ASTR('ipv6')
 astr6.set_hdname(hd_name)
