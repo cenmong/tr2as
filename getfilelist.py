@@ -1,17 +1,21 @@
-#Basic idea:
-#(1)IPv6 traceroute: get a whole month
-#(2)v4 traceroute: get N (default to 1) cycles for each team/month
+#This py should be standalone so I can make people help me download files from
+#other machines
+#My basic idea:
+#(1)IPv6 traceroute: get files of a whole (or many) month 
+#(2)v4 traceroute: get N (default to 1) cycles for each team & month
 import os
 from env import *
 ########################################IPv6##########################################
 for ym in yearmonth6:
     year = ym[0]
     month = ym[1]
+    '''
     #download files
-    os.system('wget -r --level=0 -np -m -P /media/' + hdname + '/ --http-user=chenm11@mails.tsinghua.edu.cn\
+    os.system('wget -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
             --http-password=cenmong123 --no-check-certificate\
             https://topo-data.caida.org/topo-v6/list-8.ipv6.allpref/' + year +\
             '/' + month + '/')
+    '''
     #get file list and process them
     os.system('lynx -dump -auth=chenm11@mails.tsinghua.edu.cn:cenmong123\
             https://topo-data.caida.org/topo-v6/list-8.ipv6.allpref/' + year +\
@@ -20,13 +24,13 @@ for ym in yearmonth6:
     for line in f.readlines():
         if line.split('.')[-1] != 'gz\n':
             continue
-        topofile = '/' + line.split('//')[1]
+        topofile = line.split('//')[1]
         topofile = topofile.replace('\n', '')
-        os.system('gzip -d /media/' + hdname + topofile)#unzip
-        topofile = topofile.replace('.gz', '')
-        os.system('sc_analysis_dump /media/' + hdname + topofile + ' > /media/' + hdname
-                + topofile.replace('.warts', ''))#parse 
-        os.system('rm /media/' + hdname + topofile)#remove old unparsed file
+        os.system('gzip -d ' + hdname + topofile)#unzip the files
+        topofile = topofile.replace('.gz', '')#names of the unzipped files
+        os.system('sc_analysis_dump ' + hdname + topofile + ' > ' + hdname
+                + topofile.replace('.warts', ''))#parse files
+        os.system('rm ' + hdname + topofile)#remove old unparsed files
 
     f.close()
     os.system('rm filehtml6')
@@ -53,7 +57,7 @@ for ym in yearmonth4:
         f.close()
         os.system('rm cyclehtml4')
         #download all files in the cycle
-        os.system('wget -r --level=0 -np -m -P /media/' + hdname + '/ --http-user=chenm11@mails.tsinghua.edu.cn\
+        os.system('wget -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
                 --http-password=cenmong123 --no-check-certificate\
                 https://' + mycycle)
         #get file list and process them
@@ -63,13 +67,13 @@ for ym in yearmonth4:
         for line in f.readlines():
             if line.split('.')[-1] != 'gz\n':
                 continue
-            topofile = '/' + line.split('//')[1]
+            topofile = line.split('//')[1]
             topofile = topofile.replace('\n', '')
-            os.system('gzip -d /media/' + hdname + topofile)#unzip
+            os.system('gzip -d ' + hdname + topofile)#unzip
             topofile = topofile.replace('.gz', '')
-            os.system('sc_analysis_dump /media/' + hdname + topofile + ' > /media/' + hdname
+            os.system('sc_analysis_dump ' + hdname + topofile + ' > /media/' + hdname
                     + topofile.replace('.warts', ''))#parse 
-            os.system('rm /media/' + hdname + topofile)#remove old unparsed file
+            os.system('rm ' + hdname + topofile)#remove old unparsed file
                     
         f.close()
         os.system('rm filehtml4')
