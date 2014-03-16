@@ -1,6 +1,7 @@
 from patricia import *
 from netaddr import *
 import os
+from env import *
 
 class ASTR():
     def __init__(self, string):
@@ -8,18 +9,15 @@ class ASTR():
             self.tp = 4
         elif string == 'ipv6':
             self.tp = 6
-        self.ASN_count = dict()#key: AS Number. value: integer lists.
-        self.hdname = 'chenmeng/A2A6CFC5A6CF97E5'#location where traceroute data are stored
-        self.t = trie(None)#px2AS trie
-        self.exist_c = 0# the number of existence of all ASes
-        self.none_c = 0#number of all Nones(no corresponding AS) 
-        self.p_c = 0#number of all p's(no response)
+        self.ASN_count = dict()# key: AS Number. value: integer list.
+        self.t = trie(None)# px2AS trie
+        self.exist_c = 0# the total number of existence of all ASes
+        self.none_c = 0# the total number of all Nones(no corresponding AS) 
+        self.p_c = 0# the total number of all p's(no response)
 
-    def set_hdname(self, string):
-        self.hdname = string
-
-    #read the prefix2as file and build a trie on which a node stand for a prefix
-    # and the value in it is the AS number
+    # Used in get_dict() when mapping IPs to AS numbers.
+    # Read the prefix2as file and build a trie on which a node stands for a prefix
+    # and the values stored in tree nodes are AS numbers.
     def get_trie(self, filename):
         f = open(filename, 'r')
         s = f.readline().split()
@@ -45,26 +43,25 @@ class ASTR():
         f.close()
         print 'IPv' + str(self.tp) + ': trie generation complete...'
        
-    #used in get_dict(). Increase ASN_pre's dict value in a specific position
+    #used in get_dict(). Increase ASN_pre's dict value in position pos
     def increase_dict(self, ASN_pre, pos):
         ac = self.ASN_count
         try:
             ac[ASN_pre][pos] += 1 
         except:
-            #0:existence number.
-            #1~50:middle.51~100:start.101~150:end.
-            #151~160:state values:
-            #-1:existence level
-            #-2:largest value level
-            #-4:largest value
-            #-5:existence of transit situations
-            #-6:largest value of transit situations
-            #-7:==1 if only has value 1 and 2
-            #-8:==1 if only has value 2 and 3
             ac[ASN_pre] = [0] * 161 
+            #0: total existence count
+            # 1~50:middle (transient). 51~100:start. 101~150:end. 151~160:state values:
+            # -1:existence level (unused)
+            # -2:largest value level (unused)
+            # -4:the largest value
+            # -5:total existence of transit situations (sum of 1~50)
+            # -6:largest value of transit situations (max of 1~50)
+            # -7:==1 if only has value 2. ==2 if has both 1 and 2.
+            # -8:==1 if only has value 3. ==2 if only has both 2 and 3. ==3 if has
+            # all 1 and 2 and 3. ==4 if only has both 1 and 3.
             ac[ASN_pre][pos] += 1
 
-        #record number of existence
         if pos - 100 > 0:
             ac[ASN_pre][0] += pos - 100
             self.exist_c += pos - 100
@@ -76,13 +73,13 @@ class ASTR():
             self.exist_c += pos
 
     def get_dict(self, file_list, file_pfx2as):
-        #if output file has already been generated in previous runs,
-        #we directly use them to conduct the dict 
-        has_output = os.path.exists(str(self.tp) + 'output')
+        # If output files (4output and 6output) has already been generated,
+        # here we directly use them to conduct the dict, which significantly saves time :) 
+        has_output = os.path.exists('output/' + str(self.tp) + 'output')
         if has_output == True:
-            print str(self.tp) + 'output exist. For speed, dict will be generated basing on it...'
+            print str(self.tp) + 'output already exist and dict will be generated using it...'
             ac = self.ASN_count
-            f = open(str(self.tp) + 'output', 'r')
+            f = open('output/' + str(self.tp) + 'output', 'r')
             for line in f.readlines():
                 if line[0] == '*':#end of file
                     break
@@ -119,8 +116,8 @@ class ASTR():
 
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
-        #I temprarily remove everything about pmtud because it is still an
-        #immature idea
+        # I temprarily # everything about pmtud because it is still an
+        # immature idea that need further research
         '''
         as12 = []
         as23 = []
@@ -134,15 +131,12 @@ class ASTR():
         f2323 = open('23resultv6', 'a')
         '''
         for ff in f0:
-            print 'reading file: ' + ff[:-10]
+            print 'reading file: ' + ff.replace('\n', '')
             if self.tp == 4:
-                f = open('/media/' + self.hdname +\
-                    '/topo-data.caida.org/team-probing/' + ff[:-10], 'r')
+                f = open(hdname + ff.replace('\n', ''), 'r')
             else:
-                f = open('/media/' + self.hdname +\
-                    '/topo-data.caida.org/topo-v6/' + ff[:-10], 'r')
+                f = open(hdname + ff.replace('\n', ''), 'r')
             
-
             for line in f.readlines():
                 if line[0] == '#':
                     continue
@@ -221,33 +215,37 @@ class ASTR():
                         break
             f.close()
         f0.close()
-        #f12.close()
-        #f23.close()
-        #f1212.close()
-        #f2323.close()
+        '''
+        f12.close()
+        f23.close()
+        f1212.close()
+        f2323.close()
+        '''
         return self.ASN_count
-        #END:store statistics in a dict
         print 'IPv' + str(self.tp) + ': dict generation complete...'
 
-    #This function accomplish more work that classify. It sets many attribute
-    #values of each AS.
-    def classify(self, counts, lvalues):#x,y:lists of boundary values
+    # This function sets many important attribute values for each AS.
+    # I temporarily # anything about classification because it is still
+    # inmature
+    def set_attri(self, counts, lvalues):
+        '''
         num = len(counts)
         state1 = -1
         state2 = -1
-        lvalue = -1#large value
+        '''
+        lvalue = -1# largest value
         ac = self.ASN_count
 
         for k in ac.keys():
+            '''
             for i in xrange(0, num):
                 if ac[k][0] <= counts[i]:
                     state1 = i
                     break
             if state1 == -1:#larger than counts[num - 1]
                 state1 = num
-            #if state1 != 0:
-            #    print 'state1 = ' + str(state1)
-
+            '''
+            # get the largest value from 1~150
             for j in xrange(1, 51):
                 if ac[k][j] > 0:
                     if j > lvalue:
@@ -260,38 +258,53 @@ class ASTR():
                 if ac[k][j] > 0:
                     if j - 100 > lvalue:
                         lvalue = j - 100
-
+            '''
             for i in xrange(0, num):
                 if lvalue <= lvalues[i]:
                     state2 = i
                     break
             if state2 == -1:#larger than lvalues[num - 1]
                 state2 = num
-            #print 'state2 = ' + str(state2)
 
+            # Actually I don't care about attributes -1 and -2 now
             ac[k][-1] = state1
             ac[k][-2] = state2
+            '''
             ac[k][-4] = lvalue
 
-            for j in xrange(1, 51):#only care about transit situations
+            #set three important attributes in pos -6 -7 and -8
+            for j in xrange(1, 51):
                 ac[k][-5] += ac[k][j]
                 if ac[k][j] > 0 and j > ac[k][-6]:
                     ac[k][-6] = j
-
+            # AS k has largest value 2
             if ac[k][-4] == 2:
                 if ac[k][1] != 0 or ac[k][51] != 0 or ac[k][101] != 0:
+                    ac[k][-7] = 2
+                else:
                     ac[k][-7] = 1
+            # AS k has largest value 3 
             if ac[k][-4] == 3:
                 if ac[k][2] != 0 or ac[k][52] != 0 or ac[k][102] != 0:
+                    if ac[k][1] != 0 or ac[k][51] != 0 or ac[k][101] != 0:
+                        ac[k][-8] = 3
+                    else:
+                        ac[k][-8] = 2
+                elif ac[k][1] != 0 or ac[k][51] != 0 or ac[k][101] != 0:
+                    ac[k][-8] = 4
+                else:
                     ac[k][-8] = 1
-
+                        
+            '''
             state1 = -1
             state2 = -1
+            '''
             lvalue = -1
 
         return ac 
 
-    def print_ASN(self, f, ASN):#used by get_output
+    #used by get_output() to print info of each AS
+    def print_ASN(self, f, ASN):
         ac = self.ASN_count
         f.write(ASN + ':')
         for i in xrange(1, 51):
@@ -395,4 +408,3 @@ class ASTR():
 
         f.close()
         print str(self.tp) + ': output complete!'
-

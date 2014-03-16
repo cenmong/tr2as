@@ -1,34 +1,44 @@
 from ASTR import *
 import os
-from env import hd_name
+from env import *
 
 #-------------------------------IPv6 start-------------------------------#
-astr6 = ASTR('ipv6')
-astr6.set_hdname(hd_name)
-astr6.get_dict('flist/6file_list', 'pfx2as/routeviews-rv6-20131224-1200.pfx2as')
+astr6 = ASTR('ipv6')# create an ASTR object
+# I temperarily only use 1 pfx2as file and 1 file list
+# In the future, I will loop over all pfx2as files and file lists
+# , and get many ASTR objects each corresponds to a certain time
+astr6.get_dict('metadata/6files' + yearmonth6[0][0] + yearmonth6[0][1], 'metadata/routeviews-rv6-' +\
+        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as')
 
-astr6.get_output('6output')#don't change this string
-exists = [10, 100, 1000]
-lvalues = [1, 2, 4]
-dict6 = astr6.classify(exists, lvalues)#get attributes of each AS
+astr6.get_output('output/6output')# don't change this string
+#exists = [10, 100, 1000]
+#lvalues = [1, 2, 4]
+#dict6 = astr6.set_attri(exists, lvalues)
+dict6 = astr6.set_attri()# set attributes of each AS
 
 exist_per_as6 = float(astr6.exist_c)/float(len(dict6.keys()))
+
 #-------------------------------IPv4 start-------------------------------#
 astr4 = ASTR('ipv4')
-astr4.set_hdname(hd_name)
-astr4.get_dict('flist/4file_list_test', 'pfx2as/routeviews-rv2-20131226-1200.pfx2as')
+astr4.get_dict('metadata/4files' + yearmonth4[0][0] + yearmonth4[0][1] +\
+        str(yearmonth[0][2]), 'metadata/routeviews-rv2-' +\
+        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as')
 
-astr4.get_output('4output')
-exists = [50, 500, 5000]
-lvalues = [1, 2, 4]
-dict4 = astr4.classify(exists, lvalues)
+astr4.get_output('output/4output')
+#exists = [50, 500, 5000]
+#lvalues = [1, 2, 4]
+#dict4 = astr4.set_attri(exists, lvalues)
+dict4 = astr4.set_attri()
 
 exist_per_as4 = float(astr4.exist_c)/float(len(dict4.keys()))
+
 #---------------------------Finding interesting ASes-------------------------------#
-print 'analyzing v4/v6 results...'
+print 'analyzing combined v4/v6 results...'
 fexist = os.path.exists('alloutput')
 if fexist == True:
     os.system('rm alloutput')
+# further research needed in deciding interesting ASes
+'''
 fexist = os.path.exists('intrestingAS')
 if fexist == True:
     os.system('rm intrestingAS')
@@ -38,11 +48,13 @@ if fexist == True:
 fexist = os.path.exists('as23in6')
 if fexist == True:
     os.system('rm as23in6')
-#f12 = open('as12in6', 'a')
-#f23 = open('as23in6', 'a')
-
+f12 = open('as12in6', 'a')
+f23 = open('as23in6', 'a')
+'''
 f = open('alloutput', 'a')
-#if the same as has different levels in IPv4 and IPv6, store it
+# pause anything about levels
+'''
+# if the same as has different levels in IPv4 and IPv6, store it
 count_exist = 0
 count_lvalue = 0
 count_both = 0
@@ -72,140 +84,11 @@ for ASN in dict6.keys():
 f.write('count_both = ' + str(count_both) + '\n')
 f.write('count_exist = ' + str(count_exist) + '\n')
 f.write('count_lvalue = ' + str(count_lvalue) + '\n')
+'''
 f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
 f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
 f.close()
+'''
 f12.close()
 f23.close()
-#-------------------------plot something, you know...--------------------------#
-import matplotlib.pyplot as plt 
-import numpy as np
-from aslist import ixpas
-
-elist6 = []
-elist4 = []
-vlist6 = []
-vlist4 = []
-
-ixp6 = []
-eixp6 = []
-vixp6 = []
-ixp4 = []
-eixp4 = []
-vixp4 = []
-
-e12in6 = []
-v12in6 = []
-e23in6 = []
-v23in6 = []
-e12in4 = []
-v12in4 = []
-e23in4 = []
-v23in4 = []
-
-for k in dict6.keys():
-    elist6.append(dict6[k][0])
-    vlist6.append(dict6[k][-4])
-    try:
-        if int(k) in ixpas:
-            eixp6.append(dict6[k][0])
-            vixp6.append(dict6[k][-4])
-            ixp6.append(k)
-    except:
-        pass
-    if k in dict4.keys():
-        if dict6[k][-7] == 1:
-            e12in6.append(dict4[k][0])
-            v12in6.append(dict4[k][-4])
-        elif dict6[k][-8] == 1:
-            e23in6.append(dict4[k][0])
-            v23in6.append(dict4[k][-4])
-for k in dict4.keys():
-    elist4.append(dict4[k][0])
-    vlist4.append(dict4[k][-4])
-    try:
-        if int(k) in ixpas:
-            eixp4.append(dict6[k][0])
-            vixp4.append(dict6[k][-4])
-            ixp4.append(k)
-    except:
-        pass
-    if k in dict6.keys():#only plot these special v4 ASes in v6 fig
-        if dict4[k][-7] == 1:
-            e12in4.append(dict6[k][0])
-            v12in4.append(dict6[k][-4])
-        elif dict4[k][-8] == 1:
-            e23in4.append(dict6[k][0])
-            v23in4.append(dict6[k][-4])
 '''
-for k in dict6.keys():
-    if dict6[k][-5] > 0:
-        elist6.append(dict6[k][-5])
-        vlist6.append(dict6[k][-6])
-for k in dict4.keys():
-    if dict4[k][-5] > 0:
-        elist4.append(dict4[k][-5])
-        vlist4.append(dict4[k][-6])
-'''
-# definitions for the axes
-left, width = 0.1, 0.65
-bottom, height = 0.1, 0.65
-left_h = left + width + 0.02
-
-rect_scatter = [left, bottom, width, height]
-rect_histy = [left_h, bottom, 0.2, height]
-
-#****************************IPv4***************************#
-plt.figure(1, figsize=(16, 12))
-
-axScatter = plt.axes(rect_scatter)
-axHisty = plt.axes(rect_histy)
-
-axScatter.plot(elist4, vlist4, ',')
-'''
-axScatter.plot(eixp4, vixp4, 'ro')
-for i, txt in enumerate(ixp4):
-    axScatter.annotate(txt, (eixp4[i], vixp4[i]))
-'''
-axScatter.plot(e12in6, v12in6, 'ro')
-axScatter.plot(e23in6, v23in6, 'bo')
-axScatter.set_xlabel('Number of existence')
-axScatter.set_xscale('log')
-axScatter.set_ylabel('largest value')
-
-binwidth = 1
-ymax = np.max(vlist4)
-ylim = ymax + 1
-axScatter.set_ylim( (0, ylim) )
-ybins = np.arange(0, ylim + binwidth, binwidth)
-axHisty.hist(vlist4, bins = ybins, orientation='horizontal')
-axHisty.set_ylim(axScatter.get_ylim() )
-plt.show()
-
-#**************************IPv6****************************#
-plt.figure(2, figsize=(16, 12))
-
-axScatter = plt.axes(rect_scatter)
-axHisty = plt.axes(rect_histy)
-
-axScatter.plot(elist6, vlist6, ',')
-'''
-axScatter.plot(eixp6, vixp6, 'ro')
-for i, txt in enumerate(ixp6):
-    axScatter.annotate(txt, (eixp6[i], vixp6[i]))
-'''
-axScatter.plot(e12in4, v12in4, 'ro')
-axScatter.plot(e23in4, v23in4, 'bo')
-axScatter.set_xlabel('Number of existence')
-axScatter.set_xscale('log')
-axScatter.set_ylabel('largest value')
-
-binwidth = 1
-ymax = np.max(vlist6)
-ylim = ymax + 1
-axScatter.set_ylim( (0, ylim) )
-ybins = np.arange(0, ylim + binwidth, binwidth)
-axHisty.hist(vlist6, bins = ybins, orientation='horizontal')
-axHisty.set_ylim(axScatter.get_ylim() )
-plt.show()
-
