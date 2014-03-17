@@ -10,7 +10,11 @@ for ym in yearmonth6:
     year = ym[0]
     month = ym[1]
     #download files
-    os.system('wget -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
+    #-r --level: recursive download level, 0 means infinite
+    #-np: ignore parent link
+    #m: mirror; seems useless but no harm
+    #newly added -nc: no download and override when file exists
+    os.system('wget -nc -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
             --http-password=cenmong123 --no-check-certificate\
             https://topo-data.caida.org/topo-v6/list-8.ipv6.allpref/' + year +\
             '/' + month + '/')
@@ -58,7 +62,7 @@ for ym in yearmonth4:
         f.close()
         os.system('rm cyclehtml4')
         # download all files in the cycle
-        os.system('wget -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
+        os.system('wget -nc -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
                 --http-password=cenmong123 --no-check-certificate\
                 https://' + mycycle)
         # get file list and process them
@@ -87,11 +91,11 @@ for ymd in ymd_pfx2as:
     month = ymd[1]
     day = ymd[2]
     string = year + month +day
-    os.system('wget -P ./metadata/ http://data.caida.org/datasets/routing/routeviews6-prefix2as/' +\
+    os.system('wget -nc -P ./metadata/ http://data.caida.org/datasets/routing/routeviews6-prefix2as/' +\
             year + '/' + month + '/' +\
             'routeviews-rv6-' + string + '-1200.pfx2as.gz')
     os.system('gzip -d ./metadata/' + 'routeviews-rv6-' + string + '-1200.pfx2as.gz')# unzip
-    os.system('wget -P ./metadata/ http://data.caida.org/datasets/routing/routeviews-prefix2as/' +\
+    os.system('wget -nc -P ./metadata/ http://data.caida.org/datasets/routing/routeviews-prefix2as/' +\
             year + '/' + month + '/' +\
             'routeviews-rv2-' + string + '-1200.pfx2as.gz')
     os.system('gzip -d ./metadata/' + 'routeviews-rv2-' + string + '-1200.pfx2as.gz')# unzip

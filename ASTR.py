@@ -49,9 +49,10 @@ class ASTR():
         try:
             ac[ASN_pre][pos] += 1 
         except:
-            ac[ASN_pre] = [0] * 161 
-            #0: total existence count
-            # 1~50:middle (transient). 51~100:start. 101~150:end. 151~160:state values:
+            ac[ASN_pre] = [0] * 171 
+            # 0: total existence count
+            # 1~50:middle (transient). 51~100:start. 101~150:end.
+            # 151~170:attributes
             # -1:existence level (unused)
             # -2:largest value level (unused)
             # -4:the largest value
@@ -72,10 +73,15 @@ class ASTR():
             ac[ASN_pre][0] += pos
             self.exist_c += pos
 
-    def get_dict(self, file_list, file_pfx2as):
+    def get_dict(self, file_list, file_pfx2as, yearmonth):
         # If output files (4output and 6output) has already been generated,
-        # here we directly use them to conduct the dict, which significantly saves time :) 
-        has_output = os.path.exists('output/' + str(self.tp) + 'output')
+        # here we directly use them to conduct the dict, which significantly saves time :)
+        if self.tp == 4:
+            has_output = os.path.exists('output/' + str(self.tp) + 'output' +
+                    yearmonth[0] + yearmonth[1] + str(yearmonth[2]))
+        if self.tp == 6:
+            has_output = os.path.exists('output/' + str(self.tp) + 'output' +
+                    yearmonth[0] + yearmonth[1])
         if has_output == True:
             print str(self.tp) + 'output already exist and dict will be generated using it...'
             ac = self.ASN_count
@@ -114,6 +120,7 @@ class ASTR():
             f.close()
             return ac
 
+        # If no output yet (first time process of these data)
         self.get_trie(file_pfx2as)
         f0 = open(file_list, 'r')
         # I temprarily # everything about pmtud because it is still an
@@ -272,7 +279,7 @@ class ASTR():
             '''
             ac[k][-4] = lvalue
 
-            #set three important attributes in pos -6 -7 and -8
+            #set three important attributes in pos -5 -6 -7 and -8
             for j in xrange(1, 51):
                 ac[k][-5] += ac[k][j]
                 if ac[k][j] > 0 and j > ac[k][-6]:

@@ -8,9 +8,8 @@ astr6 = ASTR('ipv6')# create an ASTR object
 # In the future, I will loop over all pfx2as files and file lists
 # , and get many ASTR objects each corresponds to a certain time
 astr6.get_dict('metadata/6files' + yearmonth6[0][0] + yearmonth6[0][1], 'metadata/routeviews-rv6-' +\
-        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as')
-
-astr6.get_output('output/6output')# don't change this string
+        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as', yearmonth6[0])
+astr6.get_output('output/6output' + yearmonth6[0][0] + yearmonth6[0][1])# don't change this string
 #exists = [10, 100, 1000]
 #lvalues = [1, 2, 4]
 #dict6 = astr6.set_attri(exists, lvalues)
@@ -21,10 +20,10 @@ exist_per_as6 = float(astr6.exist_c)/float(len(dict6.keys()))
 #-------------------------------IPv4 start-------------------------------#
 astr4 = ASTR('ipv4')
 astr4.get_dict('metadata/4files' + yearmonth4[0][0] + yearmonth4[0][1] +\
-        str(yearmonth[0][2]), 'metadata/routeviews-rv2-' +\
-        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as')
-
-astr4.get_output('output/4output')
+        str(yearmonth4[0][2]), 'metadata/routeviews-rv2-' +\
+        ymd_pfx2as[0][0] + ymd_pfx2as[0][1] + ymd_pfx2as[0][2] + '-1200.pfx2as', yearmonth4[0])
+astr4.get_output('output/4output' + yearmonth4[0][0] + yearmonth4[0][1] +\
+        str(yearmonth4[0][2]))
 #exists = [50, 500, 5000]
 #lvalues = [1, 2, 4]
 #dict4 = astr4.set_attri(exists, lvalues)
