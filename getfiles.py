@@ -90,6 +90,8 @@ for ymd in ymd_pfx2as:
     os.system('wget -P ./metadata/ http://data.caida.org/datasets/routing/routeviews6-prefix2as/' +\
             year + '/' + month + '/' +\
             'routeviews-rv6-' + string + '-1200.pfx2as.gz')
+    os.system('gzip -d ./metadata/' + 'routeviews-rv6-' + string + '-1200.pfx2as.gz')# unzip
     os.system('wget -P ./metadata/ http://data.caida.org/datasets/routing/routeviews-prefix2as/' +\
             year + '/' + month + '/' +\
             'routeviews-rv2-' + string + '-1200.pfx2as.gz')
+    os.system('gzip -d ./metadata/' + 'routeviews-rv2-' + string + '-1200.pfx2as.gz')# unzip
