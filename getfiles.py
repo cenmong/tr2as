@@ -4,7 +4,8 @@
 # (1)IPv6 traceroute: get files of a whole (or many) month 
 # (2)v4 traceroute: get N (default to 1) cycles for each team & month
 # TODO:separate download and processing. Pay special attension (or use other
-# way) to the 'rm' command. It killed me twice, man!
+# way) to the 'rm' command. It killed me twice, man! Besides, I should run
+# download at least twice to continue any middleway-stopped file.
 import os
 from env import *
 ########################################IPv6##########################################

@@ -84,8 +84,13 @@ class ASTR():
                     yearmonth[0] + yearmonth[1])
         if has_output == True:
             print str(self.tp) + 'output already exist and dict will be generated using it...'
+            if self.tp == 4:
+                f = open('output/' + str(self.tp) + 'output' +
+                        yearmonth[0] + yearmonth[1] + str(yearmonth[2]), 'r')
+            if self.tp == 6:
+                f = open('output/' + str(self.tp) + 'output' +
+                        yearmonth[0] + yearmonth[1], 'r')
             ac = self.ASN_count
-            f = open('output/' + str(self.tp) + 'output', 'r')
             for line in f.readlines():
                 if line[0] == '*':#end of file
                     break
@@ -234,7 +239,7 @@ class ASTR():
     # This function sets many important attribute values for each AS.
     # I temporarily # anything about classification because it is still
     # inmature
-    def set_attri(self, counts, lvalues):
+    def set_attri(self):
         '''
         num = len(counts)
         state1 = -1
