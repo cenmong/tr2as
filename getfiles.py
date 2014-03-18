@@ -3,6 +3,8 @@
 # My basic idea:
 # (1)IPv6 traceroute: get files of a whole (or many) month 
 # (2)v4 traceroute: get N (default to 1) cycles for each team & month
+# TODO:separate download and processing. Pay special attension (or use other
+# way) to the 'rm' command. It killed me twice, man!
 import os
 from env import *
 ########################################IPv6##########################################
@@ -12,9 +14,8 @@ for ym in yearmonth6:
     #download files
     #-r --level: recursive download level, 0 means infinite
     #-np: ignore parent link
-    #m: mirror; seems useless but no harm
     #newly added -nc: no download and override when file exists
-    os.system('wget -nc -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
+    os.system('wget -np -P ' + hdname + ' -c -m -r -A.gz --http-user=chenm11@mails.tsinghua.edu.cn\
             --http-password=cenmong123 --no-check-certificate\
             https://topo-data.caida.org/topo-v6/list-8.ipv6.allpref/' + year +\
             '/' + month + '/')
@@ -62,19 +63,19 @@ for ym in yearmonth4:
         f.close()
         os.system('rm cyclehtml4')
         # download all files in the cycle
-        os.system('wget -nc -r --level=0 -np -m -P ' + hdname + ' --http-user=chenm11@mails.tsinghua.edu.cn\
+        os.system('wget -np -P ' + hdname + ' -c -m -r -A.gz --http-user=chenm11@mails.tsinghua.edu.cn\
                 --http-password=cenmong123 --no-check-certificate\
                 https://' + mycycle)
         # get file list and process them
         os.system('lynx -dump -auth=chenm11@mails.tsinghua.edu.cn:cenmong123\
                 https://' + mycycle + '> filehtml4')
         f = open('filehtml4', 'r')
-        flist = open('metadata/4files' + year + month + str(number), 'a')
+        #flist = open('metadata/4files' + year + month + str(number), 'a')
         for line in f.readlines():
             if line.split('.')[-1] != 'gz\n':
                 continue
             topofile = line.split('//')[1]
-            flist.write(topofile.replace('.warts.gz', ''))
+            #flist.write(topofile.replace('.warts.gz', ''))
             topofile = topofile.replace('\n', '')
             os.system('gzip -d ' + hdname + topofile)# unzip
             topofile = topofile.replace('.gz', '')
@@ -82,9 +83,8 @@ for ym in yearmonth4:
                     + topofile.replace('.warts', ''))# parse 
             os.system('rm ' + hdname + topofile)# remove old unparsed file
         f.close()
-        flist.close()
+        #flist.close()
         os.system('rm filehtml4')
-
 #################################pfx2AS files######################################
 for ymd in ymd_pfx2as:
     year = ymd[0]
