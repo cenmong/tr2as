@@ -33,9 +33,9 @@ exist_per_as4 = float(astr4.exist_c)/float(len(dict4.keys()))
 
 #---------------------------Finding interesting ASes-------------------------------#
 print 'analyzing combined v4/v6 results...'
-fexist = os.path.exists('alloutput')
+fexist = os.path.exists('output/alloutput')
 if fexist == True:
-    os.system('rm alloutput')
+    os.system('rm output/alloutput')
 # further research needed in deciding interesting ASes
 '''
 fexist = os.path.exists('intrestingAS')
@@ -50,7 +50,7 @@ if fexist == True:
 f12 = open('as12in6', 'a')
 f23 = open('as23in6', 'a')
 '''
-f = open('alloutput', 'a')
+f = open('output/alloutput', 'a')
 # pause anything about levels
 '''
 # if the same as has different levels in IPv4 and IPv6, store it

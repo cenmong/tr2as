@@ -20,3 +20,4 @@ pmtud.py is a stand alone program. It conducts pmtu detection towards given dest
 Program for getting traceroute files is also independent and immature and not automated enough. Firstly, I try to get the list of all monitors from a long log file. Secondly, using this monitor list and some fetch rules, I fetch traceroute files. Note that the monitor list is quite stable, canbe generated once before we conduct any real measurement. If one want to get traceroute files, he needs to modify the program, like storage location, download choices and quantity. Making this process fully-automated and user-friendly is future work. 
 ------------------------20140316---------------------
 env.py: environment settings. set the hard disk name, the data year and month and order... 
+Have to install matplotlib 1.3 rather than 1.2, deal with  dependency problems. Anyhow, much dirty work.

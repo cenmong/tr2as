@@ -84,13 +84,13 @@ class ASTR():
                     yearmonth[0] + yearmonth[1])
         if has_output == True:
             print str(self.tp) + 'output already exist and dict will be generated using it...'
+            ac = self.ASN_count
             if self.tp == 4:
                 f = open('output/' + str(self.tp) + 'output' +
                         yearmonth[0] + yearmonth[1] + str(yearmonth[2]), 'r')
             if self.tp == 6:
                 f = open('output/' + str(self.tp) + 'output' +
                         yearmonth[0] + yearmonth[1], 'r')
-            ac = self.ASN_count
             for line in f.readlines():
                 if line[0] == '*':#end of file
                     break

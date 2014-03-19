@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt 
 import numpy as np
 from aslist import ixpas
-from main.py import dict6, dict4
+from main import dict6, dict4
 
 # e: total existence count
 # v: largest value in 1~150
@@ -76,12 +76,12 @@ for k in dict6.keys():
 for k in dict4.keys():
     elist4.append(dict4[k][0])
     vlist4.append(dict4[k][-4])
-    telist4.append(dict6[k][-5])
-    tvlist4.append(dict6[k][-6])
+    telist4.append(dict4[k][-5])
+    tvlist4.append(dict4[k][-6])
     try:
         if int(k) in ixpas:
-            eixp4.append(dict6[k][0])
-            vixp4.append(dict6[k][-4])
+            eixp4.append(dict4[k][0])
+            vixp4.append(dict4[k][-4])
             ixp4.append(k)
     except:
         pass
@@ -100,8 +100,10 @@ for k in dict4.keys():
             tv_max3in4.append(dict6[k][-6])
 
 # definitions for the axes
-left, width = 0.1, 0.65
-bottom, height = 0.1, 0.65
+left = 0.1
+width = 0.65
+bottom = 0.1
+height = 0.1
 left_h = left + width + 0.02
 
 rect_scatter = [left, bottom, width, height]
