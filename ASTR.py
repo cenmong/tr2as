@@ -63,6 +63,10 @@ class ASTR():
             # all 1 and 2 and 3. ==4 if only has both 1 and 3.
             ac[ASN_pre][pos] += 1
 
+        # ASx ASy ASy ASy ASz should only add 1 existence to ASy!
+        ac[ASN_pre][0] += 1
+        self.exist_c += 1
+        '''
         if pos - 100 > 0:
             ac[ASN_pre][0] += pos - 100
             self.exist_c += pos - 100
@@ -72,7 +76,7 @@ class ASTR():
         else:
             ac[ASN_pre][0] += pos
             self.exist_c += pos
-
+        '''
     def get_dict(self, file_list, file_pfx2as, yearmonth):
         # If output files (4output and 6output) has already been generated,
         # here we directly use them to conduct the dict, which significantly saves time :)
@@ -92,8 +96,12 @@ class ASTR():
                 f = open('output/' + str(self.tp) + 'output' +
                         yearmonth[0] + yearmonth[1], 'r')
             for line in f.readlines():
-                if line[0] == '*':#end of file
-                    break
+                if line.split(' = ')[0] == 'exist_c':
+                    self.exist_c = int(line.split(' = ')[1])
+                if line.split(' = ')[0] == 'none_c ':
+                    self.none_c  = int(line.split(' = ')[1])
+                if line.split(' = ')[0] == 'p_c':
+                    self.p_c = int(line.split(' = ')[1])
                 temp = line.split(':')
                 if temp[0] == '>=4':
                     ASN = temp[1]

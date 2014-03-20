@@ -13,9 +13,7 @@ for ym in yearmonth6:
     year = ym[0]
     month = ym[1]
     #download files
-    #-r --level: recursive download level, 0 means infinite
     #-np: ignore parent link
-    #newly added -nc: no download and override when file exists
     os.system('wget -np -P ' + hdname + ' -c -m -r -A.gz --http-user=chenm11@mails.tsinghua.edu.cn\
             --http-password=cenmong123 --no-check-certificate\
             https://topo-data.caida.org/topo-v6/list-8.ipv6.allpref/' + year +\
@@ -36,6 +34,7 @@ for ym in yearmonth6:
         topofile = topofile.replace('.gz', '')# names of the unzipped files
         os.system('sc_analysis_dump ' + hdname + topofile + ' > ' + hdname
                 + topofile.replace('.warts', ''))# parse files
+        # TODO:check whether parsed file exists before rm
         os.system('rm ' + hdname + topofile)# remove old unparsed files
 
     f.close()
