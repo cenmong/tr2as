@@ -98,17 +98,28 @@ class ASTR():
             for line in f.readlines():
                 if line.split(' = ')[0] == 'exist_c':
                     self.exist_c = int(line.split(' = ')[1])
+                    continue
                 if line.split(' = ')[0] == 'none_c ':
                     self.none_c  = int(line.split(' = ')[1])
+                    continue
                 if line.split(' = ')[0] == 'p_c':
                     self.p_c = int(line.split(' = ')[1])
+                    continue
+                if line[0] == '*' or line == '' or line == '\n':
+                    continue
                 temp = line.split(':')
                 if temp[0] == '>=4':
                     ASN = temp[1]
-                    values = temp[2]
+                    try:
+                        values = temp[2]
+                    except:
+                        continue
                 else:
-                    ASN = temp[2]
-                    values = temp[3]
+                    try:
+                        ASN = temp[2]
+                        values = temp[3]
+                    except:
+                        continue
                 ac[ASN] = [0] * 161
                 values = values.split('), ')
                 for v in values:

@@ -118,8 +118,8 @@ for k in dict4.keys():
 left = 0.03
 width = 0.65
 bottom = 0.1
-bottom_h = bottom + height + 0.01
 height = 0.8
+#bottom_h = bottom + height + 0.01
 left_h = left + width + 0.01
 left_h2 = left_h + 0.14
 
@@ -127,7 +127,7 @@ rect_scatter = [left, bottom, width, height]
 rect_histy = [left_h, bottom, 0.28, height]
 rect_histy1 = [left_h, bottom, 0.13, height]
 rect_histy2 = [left_h2, bottom, 0.13, height]
-rect_histx = [left, bottom_h, width, 0.13]
+#rect_histx = [left, bottom_h, width, 0.13]
 
 '''
 ###all
@@ -177,7 +177,7 @@ plt.figure(3, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty = plt.axes(rect_histy)
-axHistx = plt.axes(rect_histx)
+#axHistx = plt.axes(rect_histx)
 
 axScatter.plot(elist4, vlist4, ',')
 axScatter.plot(eixp4, vixp4, 'ro')
@@ -197,13 +197,13 @@ axScatter.set_ylim( (0, ylim) )
 ybins = np.arange(0, ylim + binwidth, binwidth)
 axHisty.hist(vlist4, bins = ybins, orientation='horizontal')
 axHisty.set_ylim(axScatter.get_ylim() )
-
+'''
 xlim = np.max(elist4) + 1
 axScatter.set_xlim( (0, xlim) )
 xbins = np.arange(0, xlim + binwidth, binwidth)
 axHistx.hist(elist4, bins = xbins)
-axHistx.set_ylim(axScatter.get_xlim() )
-
+axHistx.set_xlim(axScatter.get_xlim() )
+'''
 plt.show()
 ##v6
 plt.figure(4, figsize=(16, 12))
