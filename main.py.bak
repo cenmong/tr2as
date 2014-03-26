@@ -31,29 +31,63 @@ dict4 = astr4.set_attri()
 
 exist_per_as4 = float(astr4.exist_c)/float(len(dict4.keys()))
 
-################################ Finding interesting ASes
+#---------------------------Finding interesting ASes-------------------------------#
 print 'analyzing combined v4/v6 results...'
 fexist = os.path.exists('output/alloutput')
 if fexist == True:
     os.system('rm output/alloutput')
+# further research needed in deciding interesting ASes
+'''
+fexist = os.path.exists('intrestingAS')
+if fexist == True:
+    os.system('rm intrestingAS')
+fexist = os.path.exists('as12in6')
+if fexist == True:
+    os.system('rm as12in6')
+fexist = os.path.exists('as23in6')
+if fexist == True:
+    os.system('rm as23in6')
+f12 = open('as12in6', 'a')
+f23 = open('as23in6', 'a')
+'''
 f = open('output/alloutput', 'a')
+# pause anything about levels
+'''
+# if the same as has different levels in IPv4 and IPv6, store it
+count_exist = 0
+count_lvalue = 0
+count_both = 0
+for ASN in dict6.keys():
+    if dict6[ASN][-7] == 1:
+        #f12.write(ASN + '|' + str(dict6[ASN][0])+ '\n') 
+    if dict6[ASN][-8] == 1:
+        #f23.write(ASN + '|' + str(dict6[ASN][0]) + '\n') 
+    if ASN in dict4.keys():
+        if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 or\
+        abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
+            astr6.print_ASN(f, ASN)
+            astr4.print_ASN(f, ASN)
+        if abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2 and\
+        abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
+            f.write('large value diverse\n')
+            count_both += 1
+        elif abs(dict6[ASN][-1] - dict4[ASN][-1]) >= 2:
+            count_exist += 1
+            f.write('existence diverse\n')
+        elif abs(dict6[ASN][-2] - dict4[ASN][-2]) >= 2:
+            count_lvalue += 1
+            f.write('large value diverse\n')
+    else:
+        pass
+        
+f.write('count_both = ' + str(count_both) + '\n')
+f.write('count_exist = ' + str(count_exist) + '\n')
+f.write('count_lvalue = ' + str(count_lvalue) + '\n')
+'''
 f.write('v6 exist per as: ' + str(exist_per_as6) + '\n')
 f.write('v4 exist per as: ' + str(exist_per_as4) + '\n')
-
-candidate_as = []
-tunnel_as = []
-for a in dict6.keys():
-    if (dict6[a][-4] == 2 or dict6[a][-4] == 3) and dict6[a][0] > 10:
-        if a not in dict4.keys():
-            continue
-        if dict4[a][-4] > 3 and dict4[a][0]> 10:
-            candidate_as.append(a)
-            if (dict6[a][-6] == 2 or dict6[a][-6] == 3) and dict6[a][-5] > 10:
-                if dict4[a][-6] > 3 and dict4[a][-5] > 10:
-                    tunnel_as.append(a)
-                    #print a, dict6[a][-6], dict4[a][-6]
-
-#print candidate_as
-#print tunnel_as
-
 f.close()
+'''
+f12.close()
+f23.close()
+'''

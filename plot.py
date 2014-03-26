@@ -54,8 +54,9 @@ vtier1as4 = []
 for k in dict6.keys():
     elist6.append(dict6[k][0])
     vlist6.append(dict6[k][-4])
-    telist6.append(dict6[k][-5])
-    tvlist6.append(dict6[k][-6])
+    if dict6[k][-5] > 0:
+        telist6.append(dict6[k][-5])
+        tvlist6.append(dict6[k][-6])
     try:
         if int(k) in ixpas:
             eixp6.append(dict6[k][0])
@@ -77,18 +78,21 @@ for k in dict6.keys():
             e_max3in6.append(dict4[k][0])
             v_max3in6.append(dict4[k][-4])
         if dict6[k][-6] == 2:
-            te_max2in6.append(dict4[k][-5])
-            tv_max2in6.append(dict4[k][-6])
+            if dict4[k][-5] > 0:
+                te_max2in6.append(dict4[k][-5])
+                tv_max2in6.append(dict4[k][-6])
         elif dict6[k][-6] == 3:
-            te_max3in6.append(dict4[k][-5])
-            tv_max3in6.append(dict4[k][-6])
+            if dict4[k][-5] > 0:
+                te_max3in6.append(dict4[k][-5])
+                tv_max3in6.append(dict4[k][-6])
 
 # v4 set value
 for k in dict4.keys():
     elist4.append(dict4[k][0])
     vlist4.append(dict4[k][-4])
-    telist4.append(dict4[k][-5])
-    tvlist4.append(dict4[k][-6])
+    if dict4[k][-5] > 0:
+        telist4.append(dict4[k][-5])
+        tvlist4.append(dict4[k][-6])
     try:
         if int(k) in ixpas:
             eixp4.append(dict4[k][0])
@@ -108,11 +112,13 @@ for k in dict4.keys():
             e_max3in4.append(dict6[k][0])
             v_max3in4.append(dict6[k][-4])
         if dict4[k][-6] == 2:
-            te_max2in4.append(dict6[k][-5])
-            tv_max2in4.append(dict6[k][-6])
+            if dict6[k][-5] > 0:
+                te_max2in4.append(dict6[k][-5])
+                tv_max2in4.append(dict6[k][-6])
         elif dict4[k][-6] == 3:
-            te_max3in4.append(dict6[k][-5])
-            tv_max3in4.append(dict6[k][-6])
+            if dict6[k][-5] > 0:
+                te_max3in4.append(dict6[k][-5])
+                tv_max3in4.append(dict6[k][-6])
 
 # definitions for the axes
 left = 0.03
@@ -129,51 +135,9 @@ rect_histy1 = [left_h, bottom, 0.13, height]
 rect_histy2 = [left_h2, bottom, 0.13, height]
 #rect_histx = [left, bottom_h, width, 0.13]
 
-'''
-###all
-##v4
-plt.figure(1, figsize=(16, 12))
-
-axScatter = plt.axes(rect_scatter)
-axHisty = plt.axes(rect_histy)
-
-axScatter.plot(elist4, vlist4, ',')
-axScatter.set_xlabel('Number of existence')
-axScatter.set_xscale('log')
-axScatter.set_ylabel('largest value')
-
-binwidth = 1
-ymax = np.max(vlist4)
-ylim = ymax + 1
-axScatter.set_ylim( (0, ylim) )
-ybins = np.arange(0, ylim + binwidth, binwidth)
-axHisty.hist(vlist4, bins = ybins, orientation='horizontal')
-axHisty.set_ylim(axScatter.get_ylim() )
-plt.show()
-##v6
-plt.figure(2, figsize=(16, 12))
-
-axScatter = plt.axes(rect_scatter)
-axHisty = plt.axes(rect_histy)
-
-axScatter.plot(elist6, vlist6, ',')
-axScatter.set_xlabel('Number of existence')
-axScatter.set_xscale('log')
-axScatter.set_ylabel('largest value')
-
-binwidth = 1
-ymax = np.max(vlist6)
-ylim = ymax + 1
-axScatter.set_ylim( (0, ylim) )
-ybins = np.arange(0, ylim + binwidth, binwidth)
-axHisty.hist(vlist6, bins = ybins, orientation='horizontal')
-axHisty.set_ylim(axScatter.get_ylim() )
-plt.show()
-'''
-
 ###all + ixp + tier1as
 ##v4
-plt.figure(3, figsize=(16, 12))
+plt.figure(1, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty = plt.axes(rect_histy)
@@ -182,10 +146,12 @@ axHisty = plt.axes(rect_histy)
 axScatter.plot(elist4, vlist4, ',')
 axScatter.plot(eixp4, vixp4, 'ro')
 axScatter.plot(etier1as4, vtier1as4, 'bo')
+
 for i, txt in enumerate(ixp4):
     axScatter.annotate(txt, (eixp4[i], vixp4[i]))
 for i, txt in enumerate(tier1as4):
     axScatter.annotate(txt, (etier1as4[i], vtier1as4[i]))
+
 axScatter.set_xlabel('Number of existence')
 axScatter.set_xscale('log')
 axScatter.set_ylabel('largest value')
@@ -206,7 +172,7 @@ axHistx.set_xlim(axScatter.get_xlim() )
 '''
 plt.show()
 ##v6
-plt.figure(4, figsize=(16, 12))
+plt.figure(2, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty = plt.axes(rect_histy)
@@ -233,7 +199,7 @@ plt.show()
 
 ###transient
 ##v4
-plt.figure(5, figsize=(16, 12))
+plt.figure(3, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty = plt.axes(rect_histy)
@@ -252,7 +218,7 @@ axHisty.hist(tvlist4, bins = ybins, orientation='horizontal')
 axHisty.set_ylim(axScatter.get_ylim() )
 plt.show()
 ##v6
-plt.figure(6, figsize=(16, 12))
+plt.figure(4, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty = plt.axes(rect_histy)
@@ -273,7 +239,7 @@ plt.show()
 
 ###largest value 2 and 3
 ##of v6 plotted in v4
-plt.figure(7, figsize=(16, 12))
+plt.figure(5, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty1 = plt.axes(rect_histy1)
@@ -297,7 +263,7 @@ axHisty2.hist(v_max3in6, bins = ybins, orientation='horizontal')
 axHisty2.set_ylim(axScatter.get_ylim() )
 plt.show()
 ##of v4 plotted in v6
-plt.figure(8, figsize=(16, 12))
+plt.figure(6, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty1 = plt.axes(rect_histy1)
@@ -323,7 +289,7 @@ plt.show()
 
 ###largest transient value 2 and 3
 ##of v6 plotted in transient v4
-plt.figure(9, figsize=(16, 12))
+plt.figure(7, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty1 = plt.axes(rect_histy1)
@@ -347,7 +313,7 @@ axHisty2.hist(tv_max3in6, bins = ybins, orientation='horizontal')
 axHisty2.set_ylim(axScatter.get_ylim() )
 plt.show()
 ##of v4 plotted in transient v6
-plt.figure(10, figsize=(16, 12))
+plt.figure(8, figsize=(16, 12))
 
 axScatter = plt.axes(rect_scatter)
 axHisty1 = plt.axes(rect_histy1)
